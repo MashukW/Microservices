@@ -4,20 +4,16 @@ namespace Shared.Models.Responses
 {
     public class ResponseData<T>
     {
-        private ResponseData()
-        {
-
-        }
 
         public bool IsSuccess => StatusCode == 200;
 
-        public int StatusCode { get; protected set; }
+        public int StatusCode { get; set; }
 
-        public T? Data { get; protected set; }
+        public T? Data { get; set; }
 
-        public string? ErrorMessage { get; protected set; }
+        public string? ErrorMessage { get; set; }
 
-        public IList<ValidationError>? ValidationErrors { get; protected set; }
+        public IList<ValidationError>? ValidationErrors { get; set; }
 
         public static implicit operator ResponseData<T>(T? data)
         {

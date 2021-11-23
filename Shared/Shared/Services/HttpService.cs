@@ -25,7 +25,7 @@ namespace Shared.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var responseModel = JsonSerializer.Deserialize<TOutData>(responseContent, JsonOptionsConfiguration.Options);
+                    var responseModel = JsonSerializer.Deserialize<ResponseData<TOutData>>(responseContent, JsonOptionsConfiguration.Options);
                     return responseModel;
                 }
 
