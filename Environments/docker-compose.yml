@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+    mssql_db:
+        image: "mcr.microsoft.com/mssql/server:${MSSQL_IMAGE_VERSION:-latest}"
+        ports:
+        - "1433:1433"
+        environment:
+            SA_PASSWORD: ${SA_PASSWORD}
+            ACCEPT_EULA: "Y"
