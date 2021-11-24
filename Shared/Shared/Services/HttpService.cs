@@ -1,5 +1,5 @@
 ﻿using Shared.Configurations;
-using Shared.Models;
+using Shared.Models.Requests;
 using Shared.Models.Responses;
 using System.Net.Http.Headers;
 using System.Text;

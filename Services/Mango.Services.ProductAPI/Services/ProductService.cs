@@ -37,11 +37,11 @@ namespace Mango.Services.ProductAPI.Services
             var product = _mapper.Map<ProductDto, Product>(productDto);
             if (product.PublicId == Guid.Empty)
             {
-                await _productRepository.Update(product);
+                await _productRepository.Add(product);
             }
             else
             {
-                await _productRepository.Add(product);
+                await _productRepository.Update(product);
             }
 
             await _workUnit.SaveChanges();

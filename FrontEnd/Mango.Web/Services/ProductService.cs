@@ -1,5 +1,5 @@
 ﻿using Mango.Web.Models.Products;
-using Shared.Models;
+using Shared.Models.Requests;
 using Shared.Models.Responses;
 using Shared.Services;
 

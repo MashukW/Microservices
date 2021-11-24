@@ -36,6 +36,8 @@ namespace Mango.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Details(Guid productId)
         {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+
             ProductDto product= new();
             var response = await _productService.Get(productId, "");
             if (response.IsSuccess)

@@ -1,6 +1,5 @@
-﻿using Mango.Web.Models;
-using Mango.Web.Models.Carts;
-using Shared.Models;
+﻿using Mango.Web.Models.Carts;
+using Shared.Models.Requests;
 using Shared.Models.Responses;
 using Shared.Services;
 

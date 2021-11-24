@@ -4,7 +4,6 @@ namespace Shared.Models.Responses
 {
     public class ResponseData<T>
     {
-
         public bool IsSuccess => StatusCode == 200;
 
         public int StatusCode { get; set; }
@@ -21,6 +20,25 @@ namespace Shared.Models.Responses
             {
                 Data = data,
                 StatusCode = (int)HttpStatusCode.OK,
+            };
+        }
+
+        public static implicit operator ResponseData<T>(OperationResult<T> operationResult)
+        {
+            var statusCode = operationResult switch
+            {
+                { IsSuccess: true } => (int)HttpStatusCode.OK,
+                { IsSuccess: false } and { ValidationErrors: not null } => (int)HttpStatusCode.BadRequest,
+                { IsSuccess: false } and { ErrorMessage: not null } => (int)HttpStatusCode.InternalServerError,
+                _ => throw new NotSupportedException()
+            };
+
+            return new ResponseData<T>
+            {
+                Data = operationResult.Data,
+                ErrorMessage = operationResult.ErrorMessage,
+                ValidationErrors = operationResult.ValidationErrors,
+                StatusCode = statusCode,
             };
         }
 

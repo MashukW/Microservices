@@ -1,7 +1,7 @@
 ﻿using Shared.Configurations;
 using System.Text.Json;
 
-namespace Shared.Models
+namespace Shared.Models.Requests
 {
     public class RequestData
     {
