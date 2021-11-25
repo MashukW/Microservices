@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Mango.Services.ShoppingCartAPI.Accessors.Interfaces;
 using Mango.Services.ShoppingCartAPI.Database.Entities;
 using Mango.Services.ShoppingCartAPI.Models.Dto;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,6 @@ namespace Mango.Services.ShoppingCartAPI.Services
     public class CartService : ICartService
     {
         private readonly IRepository<Cart> _cartRepository;
-        private readonly IRepository<CartItem> _cartItemRepository;
         private readonly IRepository<CartProduct> _cartProductRepository;
 
         private readonly IWorkUnit _workUnit;
@@ -18,17 +18,15 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
         public CartService(
             IRepository<Cart> repository,
-            IRepository<CartItem> cartItemRepository,
             IRepository<CartProduct> cartProductRepository,
+            IUserAccessor userAccessor,
             IWorkUnit workUnit,
             IMapper mapper)
         {
             _cartRepository = repository;
-            _cartItemRepository = cartItemRepository;
             _cartProductRepository = cartProductRepository;
             _workUnit = workUnit;
             _mapper = mapper;
-
         }
 
         public async Task<OperationResult<CartDto>> Get(Guid userId)
@@ -50,9 +48,9 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return userCartDto;
         }
 
-        public async Task<OperationResult<CartDto>> AddUpdate(CartDto cartDto)
+        public async Task<OperationResult<CartDto>> Create(CartDto cartDto)
         {
-            var validationResult = ValidateCart(cartDto);
+            var validationResult = await ValidateCart(cartDto);
             if (validationResult.Data == false)
                 return OperationResult<CartDto>.ValidationFail(validationResult.ValidationErrors);
 
@@ -67,61 +65,19 @@ namespace Mango.Services.ShoppingCartAPI.Services
                 .Where(x => inputProductIds != null && inputProductIds.Contains(x.PublicId))
                 .ToDictionaryAsync(key => key.PublicId, value => value.Id);
 
-            var userCart = await _cartRepository
-                .Query()
-                .Include(x => x.CartItems).ThenInclude(x => x.Product)
-                .FirstOrDefaultAsync(x => x.UserPublicId == cartDto.UserPublicId);
-
-            if (userCart == null)
+            var userCart = new Cart()
             {
-                userCart = new Cart()
-                {
-                    UserPublicId = cartDto.UserPublicId,
-                    CouponCode = cartDto.CouponCode
-                };
+                UserPublicId = cartDto.UserPublicId,
+                CouponCode = cartDto.CouponCode
+            };
 
-                var cartItems = cartDto?.CartItems?.Select(x => CreateCartItem(x, existedProductIds)).ToList();
-                userCart.CartItems = cartItems;
+            var cartItems = cartDto?.CartItems?.Select(x => CreateCartItem(x, existedProductIds)).ToList();
+            userCart.CartItems = cartItems;
 
-                await _cartRepository.Add(userCart);
-            }
-            else
-            {
-                userCart.CouponCode = cartDto.CouponCode;
-
-                var itemsForAdding = userCart.CartItems.Where(cartItem => !cartDto.CartItems.Select(cartItemDto => cartItemDto.PublicId).Contains(cartItem.PublicId)).ToList();
-                var itemsForUpdating = userCart.CartItems.Where(cartItem => cartDto.CartItems.Select(cartItemDto => cartItemDto.PublicId).Contains(cartItem.PublicId)).ToList();
-                var itemsForRemoving = cartDto?.CartItems?.Where(cartItemDto => userCart.CartItems.Select(cartItem => cartItem.PublicId).Contains(cartItemDto.PublicId)).ToList();
-
-                foreach (var item in userCart.CartItems)
-                {
-
-                }
-
-
-                
-
-                var cartItems = cartDto?.CartItems?.Select(x => CreateCartItem(x, existedProductIds)).ToList();
-                userCart.CartItems = cartItems;
-
-                await _cartRepository.Update(userCart);
-            }
-
+            await _cartRepository.Add(userCart);
             await _workUnit.SaveChanges();
 
             return _mapper.Map<CartDto>(userCart);
-        }
-
-        public async Task<OperationResult<bool>> RemoveItem(Guid cartId, Guid cartItemId)
-        {
-            var cartItem = await _cartItemRepository.Query().FirstOrDefaultAsync(x => x.Cart.PublicId == cartId && x.PublicId == cartItemId);
-            if (cartItem == null)
-                return false;
-
-            await _cartItemRepository.Remove(cartItem);
-            await _workUnit.SaveChanges();
-
-            return true;
         }
 
         public async Task<OperationResult<bool>> Clear(Guid cartId)
@@ -139,35 +95,17 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return true;
         }
 
-        private static CartItem CreateCartItem(CartItemDto cartItemDto, Dictionary<Guid, int> existedProductIds)
+        private async Task<OperationResult<bool>> ValidateCart(CartDto cartDto)
         {
-            var cartItem = new CartItem
+            var userCart = await _cartRepository.Query(x => x.UserPublicId == cartDto.UserPublicId).FirstOrDefaultAsync();
+            if (userCart != null)
             {
-                Count = cartItemDto.Count,
-            };
-
-            if (cartItemDto.Product.PublicId != Guid.Empty && existedProductIds.ContainsKey(cartItemDto.Product.PublicId))
-            {
-                cartItem.ProductId = existedProductIds[cartItemDto.Product.PublicId];
-            }
-            else
-            {
-                cartItem.Product = new CartProduct
+                return OperationResult<bool>.ValidationFail(new List<ValidationError>
                 {
-                    PublicId = cartItemDto.Product.PublicId,
-                    Name = cartItemDto.Product.Name,
-                    Price = cartItemDto.Product.Price,
-                    CategoryName = cartItemDto.Product.CategoryName,
-                    Description = cartItemDto.Product.Description,
-                    ImageUrl = cartItemDto.Product.ImageUrl,
-                };
+                    { new ValidationError { Property = "Cart", Message = "Cart already exists"} }
+                });
             }
 
-            return cartItem;
-        }
-
-        private static OperationResult<bool> ValidateCart(CartDto cartDto)
-        {
             if (cartDto.UserPublicId == Guid.Empty)
             {
                 return OperationResult<bool>.ValidationFail(new List<ValidationError>
@@ -219,6 +157,33 @@ namespace Mango.Services.ShoppingCartAPI.Services
             }
 
             return true;
+        }
+
+        private static CartItem CreateCartItem(CartItemDto cartItemDto, Dictionary<Guid, int> existedProductIds)
+        {
+            var cartItem = new CartItem
+            {
+                Count = cartItemDto.Count,
+            };
+
+            if (cartItemDto.Product.PublicId != Guid.Empty && existedProductIds.ContainsKey(cartItemDto.Product.PublicId))
+            {
+                cartItem.ProductId = existedProductIds[cartItemDto.Product.PublicId];
+            }
+            else
+            {
+                cartItem.Product = new CartProduct
+                {
+                    PublicId = cartItemDto.Product.PublicId,
+                    Name = cartItemDto.Product.Name,
+                    Price = cartItemDto.Product.Price,
+                    CategoryName = cartItemDto.Product.CategoryName,
+                    Description = cartItemDto.Product.Description,
+                    ImageUrl = cartItemDto.Product.ImageUrl,
+                };
+            }
+
+            return cartItem;
         }
     }
 }

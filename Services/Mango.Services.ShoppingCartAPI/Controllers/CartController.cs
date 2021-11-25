@@ -35,7 +35,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         {
             try
             {
-                var newCart = await _cartService.AddUpdate(cartDto);
+                var newCart = await _cartService.Create(cartDto);
                 return newCart;
             }
             catch (Exception ex)
@@ -44,36 +44,8 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
         }
 
-        [HttpPut("update")]
-        public async Task<ResponseData<CartDto>> UpdateCart([FromBody] CartDto cartDto)
-        {
-            try
-            {
-                var updatedCart = await _cartService.AddUpdate(cartDto);
-                return updatedCart;
-            }
-            catch (Exception ex)
-            {
-                return ResponseData<CartDto>.Fail(ex.Message);
-            }
-        }
-
-        [HttpDelete("remove-item/{cartId}/{cartItemId}")]
-        public async Task<ResponseData<bool>> RemoveCartItem(Guid cartId, Guid cartItemId)
-        {
-            try
-            {
-                var isSuccess = await _cartService.RemoveItem(cartId, cartItemId);
-                return isSuccess;
-            }
-            catch (Exception ex)
-            {
-                return ResponseData<bool>.Fail(ex.Message);
-            }
-        }
-
         [HttpDelete("clear/{userId}")]
-        public async Task<ResponseData<bool>> RemoveCart(Guid cartId)
+        public async Task<ResponseData<bool>> ClearCart(Guid cartId)
         {
             try
             {

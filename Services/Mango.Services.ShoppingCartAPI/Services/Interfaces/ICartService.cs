@@ -7,9 +7,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
     {
         Task<OperationResult<CartDto>> Get(Guid userId);
 
-        Task<OperationResult<CartDto>> AddUpdate(CartDto cartDto);
-
-        Task<OperationResult<bool>> RemoveItem(Guid cartId, Guid cartItemId);
+        Task<OperationResult<CartDto>> Create(CartDto cartDto);
 
         Task<OperationResult<bool>> Clear(Guid cartId);
     }

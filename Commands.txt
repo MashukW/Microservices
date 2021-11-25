@@ -1,1 +1,3 @@
-docker-compose --env-file ./config/.env.dev up 
+docker-compose --env-file ./config/.env.dev up
+
+dotnet dev-certs https --clean

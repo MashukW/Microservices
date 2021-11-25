@@ -35,8 +35,9 @@ namespace Mango.Services.Identity.Services
                 .Where(claim => context.RequestedClaimTypes.Contains(claim.Type))
                 .ToList();
 
-            claims.Add(new Claim(JwtClaimTypes.FamilyName, user.FirstName));
-            claims.Add(new Claim(JwtClaimTypes.GivenName, user.LastName));
+            claims.Add(new Claim(JwtClaimTypes.Email, user.Email));
+            claims.Add(new Claim(JwtClaimTypes.GivenName, user.FirstName));
+            claims.Add(new Claim(JwtClaimTypes.FamilyName, user.LastName));
 
             if (_userManager.SupportsUserRole)
             {
