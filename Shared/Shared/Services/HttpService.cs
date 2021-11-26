@@ -1,6 +1,7 @@
 ﻿using Shared.Configurations;
+using Shared.Models;
+using Shared.Models.OperationResults;
 using Shared.Models.Requests;
-using Shared.Models.Responses;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -16,7 +17,7 @@ namespace Shared.Services
             _httpClient = httpClientFactory.CreateClient();
         }
 
-        public async Task<ResponseData<TOutData>> Send<TOutData>(RequestData requestData)
+        public async Task<Result<TOutData>> Send<TOutData>(RequestData requestData)
         {
             try
             {
@@ -25,15 +26,15 @@ namespace Shared.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var responseModel = JsonSerializer.Deserialize<ResponseData<TOutData>>(responseContent, JsonOptionsConfiguration.Options);
+                    var responseModel = JsonSerializer.Deserialize<Result<TOutData>>(responseContent, JsonOptionsConfiguration.Options);
                     return responseModel;
                 }
 
-                return ResponseData<TOutData>.Custom(default, (int)response.StatusCode, responseContent);
+                return JsonSerializer.Deserialize<Result>(responseContent, JsonOptionsConfiguration.Options);
             }
             catch (Exception ex)
             {
-                return ResponseData<TOutData>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
 

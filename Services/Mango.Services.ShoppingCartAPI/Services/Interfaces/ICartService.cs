@@ -1,14 +1,14 @@
 ﻿using Mango.Services.ShoppingCartAPI.Models.Dto;
-using Shared.Models;
+using Shared.Models.OperationResults;
 
 namespace Mango.Services.ShoppingCartAPI.Services
 {
     public interface ICartService
     {
-        Task<OperationResult<CartDto>> Get(Guid userId);
+        Task<Result<CartDto>> Get(Guid userId);
 
-        Task<OperationResult<CartDto>> Create(CartDto cartDto);
+        Task<Result<CartDto>> Create(CartDto cartDto);
 
-        Task<OperationResult<bool>> Clear(Guid cartId);
+        Task<Result<bool>> Clear(Guid cartId);
     }
 }

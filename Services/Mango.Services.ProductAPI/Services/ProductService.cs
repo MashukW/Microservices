@@ -4,6 +4,7 @@ using Mango.Services.ProductAPI.Models.Dto;
 using Mango.Services.ProductAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Shared.Database.Repositories;
+using Shared.Models.OperationResults;
 
 namespace Mango.Services.ProductAPI.Services
 {
@@ -20,19 +21,19 @@ namespace Mango.Services.ProductAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<List<ProductDto>> Get()
+        public async Task<Result<List<ProductDto>>> Get()
         {
             List<Product> products = await _productRepository.Get();
             return _mapper.Map<List<ProductDto>>(products);
         }
 
-        public async Task<ProductDto> Get(Guid productId)
+        public async Task<Result<ProductDto>> Get(Guid productId)
         {
             var product = await _productRepository.Query(x => x.PublicId == productId).FirstOrDefaultAsync();
             return _mapper.Map<ProductDto>(product);
         }
 
-        public async Task<ProductDto> AddUpdate(ProductDto productDto)
+        public async Task<Result<ProductDto>> AddUpdate(ProductDto productDto)
         {
             var product = _mapper.Map<ProductDto, Product>(productDto);
             if (product.PublicId == Guid.Empty)
@@ -49,7 +50,7 @@ namespace Mango.Services.ProductAPI.Services
             return _mapper.Map<Product, ProductDto>(product);
         }
 
-        public async Task<bool> Remove(Guid productId)
+        public async Task<Result<bool>> Remove(Guid productId)
         {
             try
             {

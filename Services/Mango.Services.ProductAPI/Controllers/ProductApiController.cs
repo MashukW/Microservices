@@ -2,8 +2,9 @@
 using Mango.Services.ProductAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Api;
 using Shared.Constants;
-using Shared.Models.Responses;
+using Shared.Models.OperationResults;
 
 namespace Mango.Services.ProductAPI.Controllers
 {
@@ -18,21 +19,22 @@ namespace Mango.Services.ProductAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ResponseData<IEnumerable<ProductDto>>> Get()
+        public async Task<ApiResult<List<ProductDto>>> Get()
         {
             try
             {
+                new JsonResult("");
                 var products = await _productService.Get();
                 return products;
             }
             catch (Exception ex)
             {
-                return ResponseData<IEnumerable<ProductDto>>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
 
         [HttpGet("{productId}")]
-        public async Task<ResponseData<ProductDto>> Get(Guid productId)
+        public async Task<ApiResult<ProductDto>> Get(Guid productId)
         {
             try
             {
@@ -41,13 +43,13 @@ namespace Mango.Services.ProductAPI.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseData<ProductDto>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<ResponseData<ProductDto>> Add([FromBody] ProductDto productDto)
+        public async Task<ApiResult<ProductDto>> Add([FromBody] ProductDto productDto)
         {
             try
             {
@@ -56,13 +58,13 @@ namespace Mango.Services.ProductAPI.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseData<ProductDto>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
 
         [HttpPut]
         [Authorize]
-        public async Task<ResponseData<ProductDto>> Update([FromBody] ProductDto productDto)
+        public async Task<ApiResult<ProductDto>> Update([FromBody] ProductDto productDto)
         {
             try
             {
@@ -71,13 +73,13 @@ namespace Mango.Services.ProductAPI.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseData<ProductDto>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
 
         [HttpDelete("{productId}")]
         [Authorize(Roles = RoleConstants.Admin)]
-        public async Task<ResponseData<bool>> Remove(Guid productId)
+        public async Task<ApiResult<bool>> Remove(Guid productId)
         {
             try
             {
@@ -86,7 +88,7 @@ namespace Mango.Services.ProductAPI.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseData<bool>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
     }

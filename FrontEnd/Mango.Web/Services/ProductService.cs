@@ -1,6 +1,6 @@
 ﻿using Mango.Web.Models.Products;
+using Shared.Models.OperationResults;
 using Shared.Models.Requests;
-using Shared.Models.Responses;
 using Shared.Services;
 
 namespace Mango.Web.Services
@@ -14,7 +14,7 @@ namespace Mango.Web.Services
             _httpService = httpService;
         }
 
-        public async Task<ResponseData<List<ProductDto>>> Get(string token)
+        public async Task<Result<List<ProductDto>>> Get(string token)
         {
             var requestDetails = RequestData.Get(AppConstants.ProductApiBase, $"api/products/", HttpMethod.Get, token);
 
@@ -22,7 +22,7 @@ namespace Mango.Web.Services
             return getProductsResponse;
         }
 
-        public async Task<ResponseData<ProductDto>> Get(Guid productId, string token)
+        public async Task<Result<ProductDto>> Get(Guid productId, string token)
         {
             var requestDetails = RequestData.Get(AppConstants.ProductApiBase, $"api/products/{productId}", HttpMethod.Get, token);
 
@@ -30,7 +30,7 @@ namespace Mango.Web.Services
             return getProductResponse;
         }
 
-        public async Task<ResponseData<ProductDto>> Add(ProductDto productDto, string token)
+        public async Task<Result<ProductDto>> Add(ProductDto productDto, string token)
         {
             var requestDetails = RequestData.Get(productDto, AppConstants.ProductApiBase, $"api/products/", HttpMethod.Post, token);
 
@@ -38,7 +38,7 @@ namespace Mango.Web.Services
             return addProductResponse;
         }
 
-        public async Task<ResponseData<ProductDto>> Update(ProductDto productDto, string token)
+        public async Task<Result<ProductDto>> Update(ProductDto productDto, string token)
         {
             var requestDetails = RequestData.Get(productDto, AppConstants.ProductApiBase, $"api/products/", HttpMethod.Put, token);
 
@@ -46,7 +46,7 @@ namespace Mango.Web.Services
             return updateProductResponse;
         }
 
-        public async Task<ResponseData<bool>> Remove(Guid productId, string token)
+        public async Task<Result<bool>> Remove(Guid productId, string token)
         {
             var requestDetails = RequestData.Get(AppConstants.ProductApiBase, $"api/products/{productId}", HttpMethod.Delete, token);
 

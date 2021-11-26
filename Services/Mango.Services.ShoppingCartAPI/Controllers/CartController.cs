@@ -1,7 +1,8 @@
 using Mango.Services.ShoppingCartAPI.Models.Dto;
 using Mango.Services.ShoppingCartAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Models.Responses;
+using Shared.Api;
+using Shared.Models.OperationResults;
 
 namespace Mango.Services.ShoppingCartAPI.Controllers
 {
@@ -17,7 +18,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<ResponseData<CartDto>> Get(Guid userId)
+        public async Task<ApiResult<CartDto>> Get(Guid userId)
         {
             try
             {
@@ -26,12 +27,12 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseData<CartDto>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
 
         [HttpPost("add")]
-        public async Task<ResponseData<CartDto>> AddCart([FromBody] CartDto cartDto)
+        public async Task<ApiResult<CartDto>> AddCart([FromBody] CartDto cartDto)
         {
             try
             {
@@ -40,12 +41,12 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseData<CartDto>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
 
         [HttpDelete("clear/{userId}")]
-        public async Task<ResponseData<bool>> ClearCart(Guid cartId)
+        public async Task<ApiResult<bool>> ClearCart(Guid cartId)
         {
             try
             {
@@ -54,7 +55,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseData<bool>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
     }

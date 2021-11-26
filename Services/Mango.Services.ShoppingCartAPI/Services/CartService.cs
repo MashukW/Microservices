@@ -4,7 +4,7 @@ using Mango.Services.ShoppingCartAPI.Database.Entities;
 using Mango.Services.ShoppingCartAPI.Models.Dto;
 using Microsoft.EntityFrameworkCore;
 using Shared.Database.Repositories;
-using Shared.Models;
+using Shared.Models.OperationResults;
 
 namespace Mango.Services.ShoppingCartAPI.Services
 {
@@ -29,7 +29,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<OperationResult<CartDto>> Get(Guid userId)
+        public async Task<Result<CartDto>> Get(Guid userId)
         {
             var userCart = await _cartRepository
                 .Query()
@@ -38,21 +38,18 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
             if (userCart == null)
             {
-                return OperationResult<CartDto>.ValidationFail(new List<ValidationError>
-                {
-                    { new ValidationError { Property = nameof(userId), Message = "Cart not found"} }
-                });
+                return Result.NotFound("cart not found");
             }
 
             var userCartDto = _mapper.Map<CartDto>(userCart);
             return userCartDto;
         }
 
-        public async Task<OperationResult<CartDto>> Create(CartDto cartDto)
+        public async Task<Result<CartDto>> Create(CartDto cartDto)
         {
             var validationResult = await ValidateCart(cartDto);
-            if (validationResult.Data == false)
-                return OperationResult<CartDto>.ValidationFail(validationResult.ValidationErrors);
+            if (validationResult.IsSuccess == false)
+                return Result.ValidationError(validationResult.Failure.ValidationMessages.ToArray());
 
             var inputProductIds = cartDto?
                 .CartItems?
@@ -80,7 +77,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return _mapper.Map<CartDto>(userCart);
         }
 
-        public async Task<OperationResult<bool>> Clear(Guid cartId)
+        public async Task<Result<bool>> Clear(Guid cartId)
         {
             var userCart = await _cartRepository.Query().Include(x => x.CartItems).FirstOrDefaultAsync(x => x.PublicId == cartId);
             if (userCart == null)
@@ -95,65 +92,59 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return true;
         }
 
-        private async Task<OperationResult<bool>> ValidateCart(CartDto cartDto)
+        private async Task<Result<bool>> ValidateCart(CartDto cartDto)
         {
             var userCart = await _cartRepository.Query(x => x.UserPublicId == cartDto.UserPublicId).FirstOrDefaultAsync();
             if (userCart != null)
             {
-                return OperationResult<bool>.ValidationFail(new List<ValidationError>
-                {
-                    { new ValidationError { Property = "Cart", Message = "Cart already exists"} }
-                });
+                return Result.ValidationError(new ValidationMessage { Field = "Cart", Message = "Cart already exists" });
             }
 
             if (cartDto.UserPublicId == Guid.Empty)
             {
-                return OperationResult<bool>.ValidationFail(new List<ValidationError>
-                {
-                    { new ValidationError { Property = nameof(cartDto.UserPublicId), Message = "User id can not be empty"} }
-                });
+                return Result.ValidationError(new ValidationMessage { Field = nameof(cartDto.UserPublicId), Message = "User id can not be empty" });
             }
 
             var cartItemWithCountLessOrEqualToZero = cartDto?.CartItems?.Where(x => x.Count <= 0).ToList();
             if (cartItemWithCountLessOrEqualToZero != null && cartItemWithCountLessOrEqualToZero.Any())
             {
                 var validationErrors = cartItemWithCountLessOrEqualToZero
-                    .Select(x => new ValidationError
+                    .Select(x => new ValidationMessage
                     {
-                        Property = nameof(CartItem.Count),
+                        Field = nameof(CartItem.Count),
                         Message = $"Cart item entity {x.PublicId} has no count"
                     })
-                    .ToList();
+                    .ToArray();
 
-                return OperationResult<bool>.ValidationFail(validationErrors);
+                return Result.ValidationError(validationErrors);
             }
 
             var cartItemWithNullProduct = cartDto?.CartItems?.Where(x => x.Product == null).ToList();
             if (cartItemWithNullProduct != null && cartItemWithNullProduct.Any())
             {
                 var validationErrors = cartItemWithNullProduct
-                    .Select(x => new ValidationError
+                    .Select(x => new ValidationMessage
                     {
-                        Property = nameof(CartItem.Product),
+                        Field = nameof(CartItem.Product),
                         Message = $"Cart item entity {x.PublicId} has no product"
                     })
                     .ToList();
 
-                return OperationResult<bool>.ValidationFail(validationErrors);
+                return Result.ValidationError(validationErrors);
             }
 
             var cartItemWithEmptyProductId = cartDto?.CartItems?.Where(x => x.Product != null && x.Product.PublicId == Guid.Empty).ToList();
             if (cartItemWithEmptyProductId != null && cartItemWithEmptyProductId.Any())
             {
                 var validationErrors = cartItemWithEmptyProductId
-                    .Select(x => new ValidationError
+                    .Select(x => new ValidationMessage
                     {
-                        Property = nameof(CartItem.Product),
+                        Field = nameof(CartItem.Product),
                         Message = $"Cart item entity {x.PublicId} has empty product"
                     })
                     .ToList();
 
-                return OperationResult<bool>.ValidationFail(validationErrors);
+                return Result.ValidationError(validationErrors);
             }
 
             return true;

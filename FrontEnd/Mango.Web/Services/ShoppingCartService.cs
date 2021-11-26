@@ -1,6 +1,6 @@
 ﻿using Mango.Web.Models.Carts;
+using Shared.Models.OperationResults;
 using Shared.Models.Requests;
-using Shared.Models.Responses;
 using Shared.Services;
 
 namespace Mango.Web.Services
@@ -14,7 +14,7 @@ namespace Mango.Web.Services
             _httpService = httpService;
         }
 
-        public async Task<ResponseData<CartDto>> Get(Guid userId, string? token = null)
+        public async Task<Result<CartDto>> Get(Guid userId, string? token = null)
         {
             var requestDetails = RequestData.Get(AppConstants.ShoppingCartApi, $"api/cart/{userId}", HttpMethod.Get, token);
 
@@ -23,7 +23,7 @@ namespace Mango.Web.Services
             return getCartResponse;
         }
 
-        public async Task<ResponseData<CartDto>> Add(CartDto cartDto, string? token = null)
+        public async Task<Result<CartDto>> Add(CartDto cartDto, string? token = null)
         {
             var requestDetails = RequestData.Get(cartDto, AppConstants.ShoppingCartApi, $"api/cart/add", HttpMethod.Post, token);
 
@@ -31,7 +31,7 @@ namespace Mango.Web.Services
             return addCartResponse;
         }
 
-        public async Task<ResponseData<CartDto>> Update(CartDto cartDto, string? token = null)
+        public async Task<Result<CartDto>> Update(CartDto cartDto, string? token = null)
         {
             var requestDetails = RequestData.Get(cartDto, AppConstants.ShoppingCartApi, $"api/cart/update/", HttpMethod.Put, token);
 
@@ -39,7 +39,7 @@ namespace Mango.Web.Services
             return updateCartResponse;
         }
 
-        public async Task<ResponseData<bool>> RemoveItem<T>(Guid cartId, Guid cartItemId, string? token = null)
+        public async Task<Result<bool>> RemoveItem<T>(Guid cartId, Guid cartItemId, string? token = null)
         {
             var requestDetails = RequestData.Get(AppConstants.ShoppingCartApi, $"api/cart/remove-item/{cartId}/{cartItemId}", HttpMethod.Delete, token);
 
@@ -47,7 +47,7 @@ namespace Mango.Web.Services
             return removeCartItemResponse;
         }
 
-        public async Task<ResponseData<bool>> Clear<T>(Guid userId, string? token = null)
+        public async Task<Result<bool>> Clear<T>(Guid userId, string? token = null)
         {
             var requestDetails = RequestData.Get(AppConstants.ShoppingCartApi, $"api/cart/clear/{userId}", HttpMethod.Delete, token);
 

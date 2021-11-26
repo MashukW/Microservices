@@ -1,10 +1,10 @@
-﻿using Shared.Models.Requests;
-using Shared.Models.Responses;
+﻿using Shared.Models.OperationResults;
+using Shared.Models.Requests;
 
 namespace Shared.Services
 {
     public interface IHttpService
     {
-        Task<ResponseData<TOutData>> Send<TOutData>(RequestData requestData);
+        Task<Result<TOutData>> Send<TOutData>(RequestData requestData);
     }
 }

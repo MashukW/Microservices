@@ -4,7 +4,7 @@ using Mango.Services.ShoppingCartAPI.Models.Dto;
 using Mango.Services.ShoppingCartAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shared.Database.Repositories;
-using Shared.Models;
+using Shared.Models.OperationResults;
 
 namespace Mango.Services.ShoppingCartAPI.Services
 {
@@ -32,7 +32,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
         }
 
-        public async Task<OperationResult<IList<CartItemDto>>> GetItems(Guid cartId)
+        public async Task<Result<IList<CartItemDto>>> GetItems(Guid cartId)
         {
             var userCartItems = await _cartItemRepository
                 .Query(x => x.Cart.PublicId == cartId)
@@ -42,7 +42,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return _mapper.Map<List<CartItemDto>>(userCartItems);
         }
 
-        public async Task<OperationResult<IList<CartItemDto>>> AddUpdateItems(Guid cartId, IList<CartItemDto> cartItemsDto)
+        public async Task<Result<IList<CartItemDto>>> AddUpdateItems(Guid cartId, IList<CartItemDto> cartItemsDto)
         {
             var userCart = await _cartRepository
                 .Query()
@@ -51,10 +51,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
             if (userCart == null)
             {
-                return OperationResult<IList<CartItemDto>>.ValidationFail(new List<ValidationError>
-                {
-                    { new ValidationError { Property = nameof(cartId), Message = "Cart not found"} }
-                });
+                return Result.ValidationError(new ValidationMessage { Field = nameof(cartId), Message = "Cart not found" });
             }
 
             var inputProductIds = cartItemsDto
@@ -87,7 +84,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return _mapper.Map<List<CartItemDto>>(userCart.CartItems);
         }
 
-        public async Task<OperationResult<bool>> RemoveItems(Guid cartId, IList<Guid> cartItemIds)
+        public async Task<Result<bool>> RemoveItems(Guid cartId, IList<Guid> cartItemIds)
         {
             var userCart = await _cartRepository
                 .Query()
@@ -96,10 +93,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
             if (userCart == null)
             {
-                return OperationResult<bool>.ValidationFail(new List<ValidationError>
-                {
-                    { new ValidationError { Property = nameof(cartId), Message = "Cart not found"} }
-                });
+                return Result.ValidationError(new ValidationMessage { Field = nameof(cartId), Message = "Cart not found" });
             }
 
             var itemsToRemove = userCart.CartItems?.Where(x => cartItemIds.Contains(x.PublicId)).ToList();

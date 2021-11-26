@@ -1,7 +1,8 @@
 ﻿using Mango.Services.ShoppingCartAPI.Models.Dto;
 using Mango.Services.ShoppingCartAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Models.Responses;
+using Shared.Api;
+using Shared.Models.OperationResults;
 
 namespace Mango.Services.ShoppingCartAPI.Controllers
 {
@@ -17,7 +18,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpGet("{cartId}")]
-        public async Task<ResponseData<IList<CartItemDto>>> GetItems(Guid cartId)
+        public async Task<ApiResult<IList<CartItemDto>>> GetItems(Guid cartId)
         {
             try
             {
@@ -26,12 +27,12 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseData<IList<CartItemDto>>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
 
         [HttpPost("{cartId}")]
-        public async Task<ResponseData<IList<CartItemDto>>> AddUpdateItems(Guid cartId, [FromBody] List<CartItemDto> cartItems)
+        public async Task<ApiResult<IList<CartItemDto>>> AddUpdateItems(Guid cartId, [FromBody] List<CartItemDto> cartItems)
         {
             try
             {
@@ -40,12 +41,12 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseData<IList<CartItemDto>>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
 
         [HttpDelete("{cartId}")]
-        public async Task<ResponseData<bool>> RemoveItems(Guid cartId, [FromBody] List<Guid> cartItemIds)
+        public async Task<ApiResult<bool>> RemoveItems(Guid cartId, [FromBody] List<Guid> cartItemIds)
         {
             try
             {
@@ -54,7 +55,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseData<bool>.Fail(ex.Message);
+                return Result.ServerError(ex.Message);
             }
         }
     }
