@@ -23,7 +23,6 @@ namespace Mango.Services.ProductAPI.Controllers
         {
             try
             {
-                new JsonResult("");
                 var products = await _productService.Get();
                 return products;
             }

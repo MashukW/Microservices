@@ -13,8 +13,6 @@ namespace Mango.Services.ProductAPI.Database
 
         }
 
-        public DbSet<Product> Products { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

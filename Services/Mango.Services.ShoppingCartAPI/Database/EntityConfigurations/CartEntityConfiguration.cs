@@ -8,6 +8,8 @@ namespace Mango.Services.ShoppingCartAPI.Database.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Cart> builder)
         {
+            builder.ToTable($"{nameof(Cart)}s");
+
             builder.HasKey(p => p.Id);
             builder.Property(p => p.PublicId).IsRequired();
             builder.Property(p => p.UserPublicId).IsRequired();

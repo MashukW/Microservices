@@ -21,8 +21,29 @@ namespace Mango.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult CartIndex()
+        public async Task<IActionResult> CartIndex()
         {
+            CartDto userCart = new();
+
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            var response = await _shoppingCartService.Get(accessToken);
+            if (response.IsSuccess)
+            {
+                userCart = response.Data ?? new CartDto();
+            }
+
+            return View(userCart);
+        }
+
+        public async Task<IActionResult> Remove(Guid cartItemPublicId)
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            var removeItemsResponse = await _shoppingCartService.RemoveItems(new List<Guid> { cartItemPublicId }, accessToken);
+            if (removeItemsResponse.IsSuccess && removeItemsResponse.Data)
+            {
+                return RedirectToAction(nameof(CartIndex));
+            }
+
             return View();
         }
 

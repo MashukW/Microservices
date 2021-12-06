@@ -1,7 +1,8 @@
-using Mango.Services.ProductAPI.Database;
-using Mango.Services.ProductAPI.Database.Entities;
-using Mango.Services.ProductAPI.Repository;
-using Mango.Services.ProductAPI.Services;
+using Mango.Services.CouponAPI.Accessors;
+using Mango.Services.CouponAPI.Database;
+using Mango.Services.CouponAPI.Entities;
+using Mango.Services.CouponAPI.Services;
+using Mango.Services.CouponAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -14,15 +15,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IUserAccessor, UserAccessor>();
+
+builder.Services.AddScoped<ICouponService, CouponService>();
 
 builder.Services.AddScoped<BaseDbContext, ApplicationDbContext>();
 
-builder.Services.AddScoped<IRepository<Product>, Repository<Product>>();
+builder.Services.AddScoped<IRepository<Coupon>, Repository<Coupon>>();
 
 builder.Services.AddScoped<IWorkUnit, WorkUnit>();
 
@@ -58,7 +63,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mango.Services.ProductAPI", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mango.Services.CouponAPI", Version = "v1" });
     c.EnableAnnotations();
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {

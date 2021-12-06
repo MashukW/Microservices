@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mango.Services.ShoppingCartAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211124225436_InitialCartEntities")]
-    partial class InitialCartEntities
+    [Migration("20211206224708_InitialShoppingCart")]
+    partial class InitialShoppingCart
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -49,7 +49,7 @@ namespace Mango.Services.ShoppingCartAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cart");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("Mango.Services.ShoppingCartAPI.Database.Entities.CartItem", b =>
@@ -84,7 +84,7 @@ namespace Mango.Services.ShoppingCartAPI.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItem");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("Mango.Services.ShoppingCartAPI.Database.Entities.CartProduct", b =>
@@ -116,7 +116,7 @@ namespace Mango.Services.ShoppingCartAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CartProduct");
+                    b.ToTable("CartProducts", (string)null);
                 });
 
             modelBuilder.Entity("Mango.Services.ShoppingCartAPI.Database.Entities.CartItem", b =>

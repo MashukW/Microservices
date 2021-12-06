@@ -8,6 +8,8 @@ namespace Mango.Services.ProductAPI.Database.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
+            builder.ToTable($"{nameof(Product)}s");
+
             builder.Property(s => s.Name).IsRequired();
             builder.Property(s => s.Price).IsRequired();
         }

@@ -5,5 +5,7 @@
         public static string ProductApiBase { get; set; }
 
         public static string ShoppingCartApi { get; set;}
+
+        public static string CouponApi { get; set; }
     }
 }
