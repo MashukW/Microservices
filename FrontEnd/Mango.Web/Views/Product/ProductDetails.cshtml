@@ -2,7 +2,7 @@
 
 @model ProductDto
 
-<form method="post">
+<form method="post" asp-controller="Cart" asp-action="AddItems">
 	<input asp-for="PublicId" hidden />
 	<div class=" pt-4">
 		<div class="card container" style="border:1px solid #808080;">

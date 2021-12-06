@@ -5,10 +5,14 @@ namespace Mango.Services.ShoppingCartAPI.Services
 {
     public interface ICartService
     {
-        Task<Result<CartDto>> Get(Guid userId);
+        Task<Result<CartDto>> Get();
 
-        Task<Result<CartDto>> Create(CartDto cartDto);
+        Task<Result<CartDto>> AddItems(List<CartItemDto> cartItemsDto);
 
-        Task<Result<bool>> Clear(Guid cartId);
+        Task<Result<CartDto>> UpdateItems(List<CartItemDto> cartItemsDto);
+
+        Task<Result<bool>> RemoveItems(List<Guid> cartItemsPublicIds);
+
+        Task<Result<bool>> Clear();
     }
 }

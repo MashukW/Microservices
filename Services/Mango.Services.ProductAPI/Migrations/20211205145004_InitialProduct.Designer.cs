@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mango.Services.ProductAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211123223817_InitialProductEntities")]
-    partial class InitialProductEntities
+    [Migration("20211205145004_InitialProduct")]
+    partial class InitialProduct
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -61,40 +61,40 @@ namespace Mango.Services.ProductAPI.Migrations
                             Id = 1,
                             CategoryName = "Appetizer",
                             Description = "Praesent scelerisque, mi sed ultrices condimentum, lacus ipsum viverra massa, in lobortis sapien eros in arcu. Quisque vel lacus ac magna vehicula sagittis ut non lacus.<br/>Sed volutpat tellus lorem, lacinia tincidunt tellus varius nec. Vestibulum arcu turpis, facilisis sed ligula ac, maximus malesuada neque. Phasellus commodo cursus pretium.",
-                            ImageUrl = "https://learningkeyvaultsa.blob.core.windows.net/mango/14.jpg",
+                            ImageUrl = "https://learnmicroservicessa.blob.core.windows.net/mango/products/14.jpg",
                             Name = "Samosa",
                             Price = 15.0,
-                            PublicId = new Guid("3b275e10-caab-4f87-90eb-17e03b2fdf5f")
+                            PublicId = new Guid("d15fdcfa-0fb7-46c9-b74b-8d998779773e")
                         },
                         new
                         {
                             Id = 2,
                             CategoryName = "Appetizer",
                             Description = "Praesent scelerisque, mi sed ultrices condimentum, lacus ipsum viverra massa, in lobortis sapien eros in arcu. Quisque vel lacus ac magna vehicula sagittis ut non lacus.<br/>Sed volutpat tellus lorem, lacinia tincidunt tellus varius nec. Vestibulum arcu turpis, facilisis sed ligula ac, maximus malesuada neque. Phasellus commodo cursus pretium.",
-                            ImageUrl = "https://learningkeyvaultsa.blob.core.windows.net/mango/12.jpg",
+                            ImageUrl = "https://learnmicroservicessa.blob.core.windows.net/mango/products/12.jpg",
                             Name = "Paneer Tikka",
                             Price = 13.99,
-                            PublicId = new Guid("00000000-0000-0000-0000-000000000000")
+                            PublicId = new Guid("117c8160-949f-4ad8-ba0d-412b11b502d5")
                         },
                         new
                         {
                             Id = 3,
                             CategoryName = "Dessert",
                             Description = "Praesent scelerisque, mi sed ultrices condimentum, lacus ipsum viverra massa, in lobortis sapien eros in arcu. Quisque vel lacus ac magna vehicula sagittis ut non lacus.<br/>Sed volutpat tellus lorem, lacinia tincidunt tellus varius nec. Vestibulum arcu turpis, facilisis sed ligula ac, maximus malesuada neque. Phasellus commodo cursus pretium.",
-                            ImageUrl = "https://learningkeyvaultsa.blob.core.windows.net/mango/11.jpg",
+                            ImageUrl = "https://learnmicroservicessa.blob.core.windows.net/mango/products/11.jpg",
                             Name = "Sweet Pie",
                             Price = 10.99,
-                            PublicId = new Guid("71edac17-dcfd-488f-9314-988427fac757")
+                            PublicId = new Guid("be43e9cb-019c-4022-84ee-a78a35ea016a")
                         },
                         new
                         {
                             Id = 4,
                             CategoryName = "Entree",
                             Description = "Praesent scelerisque, mi sed ultrices condimentum, lacus ipsum viverra massa, in lobortis sapien eros in arcu. Quisque vel lacus ac magna vehicula sagittis ut non lacus.<br/>Sed volutpat tellus lorem, lacinia tincidunt tellus varius nec. Vestibulum arcu turpis, facilisis sed ligula ac, maximus malesuada neque. Phasellus commodo cursus pretium.",
-                            ImageUrl = "https://learningkeyvaultsa.blob.core.windows.net/mango/13.jpg",
+                            ImageUrl = "https://learnmicroservicessa.blob.core.windows.net/mango/products/13.jpg",
                             Name = "Pav Bhaji",
                             Price = 15.0,
-                            PublicId = new Guid("b5a398d5-f67c-4335-b4c7-a22e1f7d5ac1")
+                            PublicId = new Guid("7d0a70d7-4010-4789-b10a-a89192d11f87")
                         });
                 });
 #pragma warning restore 612, 618

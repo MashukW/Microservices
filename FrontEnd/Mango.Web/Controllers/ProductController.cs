@@ -1,10 +1,12 @@
 ﻿using Mango.Web.Models.Products;
 using Mango.Web.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mango.Web.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
@@ -14,6 +16,7 @@ namespace Mango.Web.Controllers
             _productService = productService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> ProductIndex()
         {
             List<ProductDto> products = new();
@@ -29,7 +32,20 @@ namespace Mango.Web.Controllers
             return View(products);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ProductDetails(Guid productId)
+        {
+            ProductDto product = new();
+            var response = await _productService.Get(productId, "");
+            if (response.IsSuccess)
+            {
+                product = response.Data;
+            }
 
+            return View(product);
+        }
+
+        [HttpGet]
         public IActionResult ProductCreate()
         {
             return View();
@@ -53,6 +69,7 @@ namespace Mango.Web.Controllers
             return View(productDto);
         }
 
+        [HttpGet]
         public async Task<IActionResult> ProductEdit(Guid productId)
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
@@ -86,6 +103,7 @@ namespace Mango.Web.Controllers
             return View(productDto);
         }
 
+        [HttpGet]
         public async Task<IActionResult> ProductDelete(Guid productId)
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");

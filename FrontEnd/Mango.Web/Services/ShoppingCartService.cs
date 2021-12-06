@@ -14,42 +14,42 @@ namespace Mango.Web.Services
             _httpService = httpService;
         }
 
-        public async Task<Result<CartDto>> Get(Guid userId, string? token = null)
+        public async Task<Result<CartDto>> Get(string? token = null)
         {
-            var requestDetails = RequestData.Get(AppConstants.ShoppingCartApi, $"api/cart/{userId}", HttpMethod.Get, token);
+            var requestDetails = RequestData.Create(AppConstants.ShoppingCartApi, $"api/cart", HttpMethod.Get, token);
 
             var getCartResponse = await _httpService.Send<CartDto>(requestDetails);
 
             return getCartResponse;
         }
 
-        public async Task<Result<CartDto>> Add(CartDto cartDto, string? token = null)
+        public async Task<Result<CartDto>> AddItems(List<CartItemDto> cartItemsDto, string? token = null)
         {
-            var requestDetails = RequestData.Get(cartDto, AppConstants.ShoppingCartApi, $"api/cart/add", HttpMethod.Post, token);
+            var requestDetails = RequestData.Create(cartItemsDto, AppConstants.ShoppingCartApi, $"api/cart/add-items", HttpMethod.Post, token);
 
             var addCartResponse = await _httpService.Send<CartDto>(requestDetails);
             return addCartResponse;
         }
 
-        public async Task<Result<CartDto>> Update(CartDto cartDto, string? token = null)
+        public async Task<Result<CartDto>> UpdateItems(List<CartItemDto> cartItemsDto, string? token = null)
         {
-            var requestDetails = RequestData.Get(cartDto, AppConstants.ShoppingCartApi, $"api/cart/update/", HttpMethod.Put, token);
+            var requestDetails = RequestData.Create(cartItemsDto, AppConstants.ShoppingCartApi, $"api/cart/update-items", HttpMethod.Put, token);
 
             var updateCartResponse = await _httpService.Send<CartDto>(requestDetails);
             return updateCartResponse;
         }
 
-        public async Task<Result<bool>> RemoveItem<T>(Guid cartId, Guid cartItemId, string? token = null)
+        public async Task<Result<bool>> RemoveItems(List<Guid> cartItemPublicIds, string? token = null)
         {
-            var requestDetails = RequestData.Get(AppConstants.ShoppingCartApi, $"api/cart/remove-item/{cartId}/{cartItemId}", HttpMethod.Delete, token);
+            var requestDetails = RequestData.Create(cartItemPublicIds, AppConstants.ShoppingCartApi, $"api/cart/remove-items", HttpMethod.Delete, token);
 
             var removeCartItemResponse = await _httpService.Send<bool>(requestDetails);
             return removeCartItemResponse;
         }
 
-        public async Task<Result<bool>> Clear<T>(Guid userId, string? token = null)
+        public async Task<Result<bool>> Clear(string? token = null)
         {
-            var requestDetails = RequestData.Get(AppConstants.ShoppingCartApi, $"api/cart/clear/{userId}", HttpMethod.Delete, token);
+            var requestDetails = RequestData.Create(AppConstants.ShoppingCartApi, $"api/cart/clear", HttpMethod.Delete, token);
 
             var clearCartResponse = await _httpService.Send<bool>(requestDetails);
             return clearCartResponse;

@@ -19,7 +19,7 @@ namespace Shared.Models.Requests
 
         public string AuthenticationScheme { get; protected set; }
 
-        public static RequestData Get<T>(
+        public static RequestData Create<T>(
             T content,
             string baseUrl,
             string path,
@@ -48,7 +48,7 @@ namespace Shared.Models.Requests
             return requestData;
         }
 
-        public static RequestData Get(
+        public static RequestData Create(
             string baseUrl,
             string path,
             HttpMethod httpMethod,

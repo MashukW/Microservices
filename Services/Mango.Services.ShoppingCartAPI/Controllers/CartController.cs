@@ -17,12 +17,12 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             _cartService = cartService;
         }
 
-        [HttpGet("{userId}")]
-        public async Task<ApiResult<CartDto>> Get(Guid userId)
+        [HttpGet]
+        public async Task<ApiResult<CartDto>> Get()
         {
             try
             {
-                var cartDto = await _cartService.Get(userId);
+                var cartDto = await _cartService.Get();
                 return cartDto;
             }
             catch (Exception ex)
@@ -31,13 +31,13 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
         }
 
-        [HttpPost("add")]
-        public async Task<ApiResult<CartDto>> AddCart([FromBody] CartDto cartDto)
+        [HttpPost("add-items")]
+        public async Task<ApiResult<CartDto>> AddItems([FromBody] List<CartItemDto> cartItemsDto)
         {
             try
             {
-                var newCart = await _cartService.Create(cartDto);
-                return newCart;
+                var userCart = await _cartService.AddItems(cartItemsDto);
+                return userCart;
             }
             catch (Exception ex)
             {
@@ -45,12 +45,40 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
         }
 
-        [HttpDelete("clear/{userId}")]
-        public async Task<ApiResult<bool>> ClearCart(Guid cartId)
+        [HttpPut("update-items")]
+        public async Task<ApiResult<CartDto>> UpdateItems([FromBody] List<CartItemDto> cartItemsDto)
         {
             try
             {
-                var isSuccess = await _cartService.Clear(cartId);
+                var userCart = await _cartService.UpdateItems(cartItemsDto);
+                return userCart;
+            }
+            catch (Exception ex)
+            {
+                return Result.ServerError(ex.Message);
+            }
+        }
+
+        [HttpDelete("remove-items")]
+        public async Task<ApiResult<bool>> RemoveItems([FromBody] List<Guid> cartItemsPublicIds)
+        {
+            try
+            {
+                var isSuccess = await _cartService.RemoveItems(cartItemsPublicIds);
+                return isSuccess;
+            }
+            catch (Exception ex)
+            {
+                return Result.ServerError(ex.Message);
+            }
+        }
+
+        [HttpDelete("clear")]
+        public async Task<ApiResult<bool>> Clear()
+        {
+            try
+            {
+                var isSuccess = await _cartService.Clear();
                 return isSuccess;
             }
             catch (Exception ex)

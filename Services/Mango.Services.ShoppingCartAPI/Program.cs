@@ -3,7 +3,6 @@ using Mango.Services.ShoppingCartAPI.Accessors.Interfaces;
 using Mango.Services.ShoppingCartAPI.Database;
 using Mango.Services.ShoppingCartAPI.Database.Entities;
 using Mango.Services.ShoppingCartAPI.Services;
-using Mango.Services.ShoppingCartAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -24,12 +23,10 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IUserAccessor, UserAccessor>();
 
 builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<ICartItemService, CartItemService>();
 
 builder.Services.AddScoped<BaseDbContext, ApplicationDbContext>();
 
 builder.Services.AddScoped<IRepository<Cart>, Repository<Cart>>();
-builder.Services.AddScoped<IRepository<CartItem>, Repository<CartItem>>();
 builder.Services.AddScoped<IRepository<CartProduct>, Repository<CartProduct>>();
 
 builder.Services.AddScoped<IWorkUnit, WorkUnit>();

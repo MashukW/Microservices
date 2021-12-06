@@ -5,14 +5,14 @@ namespace Mango.Web.Services
 {
     public interface IShoppingCartService
     {
-        Task<Result<CartDto>> Get(Guid userId, string? token = null);
+        Task<Result<CartDto>> Get(string? token = null);
 
-        Task<Result<CartDto>> Add(CartDto cartDto, string? token = null);
+        Task<Result<CartDto>> AddItems(List<CartItemDto> cartItemsDto, string? token = null);
 
-        Task<Result<CartDto>> Update(CartDto cartDto, string? token = null);
+        Task<Result<CartDto>> UpdateItems(List<CartItemDto> cartItemsDto, string? token = null);
 
-        Task<Result<bool>> RemoveItem<T>(Guid cartId, Guid cartItemId, string? token = null);
+        Task<Result<bool>> RemoveItems(List<Guid> cartItemPublicIds, string? token = null);
 
-        Task<Result<bool>> Clear<T>(Guid userId, string? token = null);
+        Task<Result<bool>> Clear(string? token = null);
     }
 }

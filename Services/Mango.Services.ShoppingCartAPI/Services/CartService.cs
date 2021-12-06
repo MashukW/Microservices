@@ -10,6 +10,8 @@ namespace Mango.Services.ShoppingCartAPI.Services
 {
     public class CartService : ICartService
     {
+        private readonly IUserAccessor _userAccessor;
+
         private readonly IRepository<Cart> _cartRepository;
         private readonly IRepository<CartProduct> _cartProductRepository;
 
@@ -17,71 +19,133 @@ namespace Mango.Services.ShoppingCartAPI.Services
         private readonly IMapper _mapper;
 
         public CartService(
-            IRepository<Cart> repository,
-            IRepository<CartProduct> cartProductRepository,
             IUserAccessor userAccessor,
+            IRepository<Cart> cartRepository,
+            IRepository<CartProduct> cartProductRepository,
             IWorkUnit workUnit,
             IMapper mapper)
         {
-            _cartRepository = repository;
+            _userAccessor = userAccessor;
+
+            _cartRepository = cartRepository;
             _cartProductRepository = cartProductRepository;
+
             _workUnit = workUnit;
             _mapper = mapper;
         }
 
-        public async Task<Result<CartDto>> Get(Guid userId)
+        public async Task<Result<CartDto>> Get()
         {
-            var userCart = await _cartRepository
-                .Query()
-                .Include(x => x.CartItems).ThenInclude(x => x.Product)
-                .FirstOrDefaultAsync(x => x.UserPublicId == userId);
-
+            var userCart = await GetUserCart();
             if (userCart == null)
-            {
-                return Result.NotFound("cart not found");
-            }
+                userCart = CreateNewUserCart();
 
             var userCartDto = _mapper.Map<CartDto>(userCart);
             return userCartDto;
         }
 
-        public async Task<Result<CartDto>> Create(CartDto cartDto)
+        public async Task<Result<CartDto>> AddItems(List<CartItemDto> cartItemsDto)
         {
-            var validationResult = await ValidateCart(cartDto);
-            if (validationResult.IsSuccess == false)
-                return Result.ValidationError(validationResult.Failure.ValidationMessages.ToArray());
-
-            var inputProductIds = cartDto?
-                .CartItems?
-                .Where(x => x.Product != null && x.Product.PublicId != Guid.Empty)
-                .Select(x => x.Product.PublicId)
-                .ToList();
-
-            var existedProductIds = await _cartProductRepository
-                .Query()
-                .Where(x => inputProductIds != null && inputProductIds.Contains(x.PublicId))
-                .ToDictionaryAsync(key => key.PublicId, value => value.Id);
-
-            var userCart = new Cart()
+            var userCart = await GetUserCart();
+            if (userCart == null)
             {
-                UserPublicId = cartDto.UserPublicId,
-                CouponCode = cartDto.CouponCode
-            };
+                userCart = CreateNewUserCart();
 
-            var cartItems = cartDto?.CartItems?.Select(x => CreateCartItem(x, existedProductIds)).ToList();
-            userCart.CartItems = cartItems;
+                var cartItems = await CreateCartItems(cartItemsDto);
+                userCart.CartItems = cartItems;
 
-            await _cartRepository.Add(userCart);
+                await _cartRepository.Add(userCart);
+            }
+            else
+            {
+                var existingCartItems = userCart.CartItems?.ToList();
+                if (existingCartItems == null || !existingCartItems.Any())
+                {
+                    var cartItems = await CreateCartItems(cartItemsDto);
+                    userCart.CartItems = cartItems;
+                }
+                else
+                {
+                    var existingCartItemsByProduct = GetExistingCartItemsByProduct(existingCartItems, cartItemsDto.Select(x => x.Product.PublicId).ToList());
+                    UpdateExistingCartItemsCount(existingCartItemsByProduct, cartItemsDto);
+
+                    var nonExistingCartItemsByProduct = GetNonExistingCartItemsByProduct(cartItemsDto, existingCartItems.Select(x => x.Product.PublicId).ToList());
+                    if (nonExistingCartItemsByProduct != null && nonExistingCartItemsByProduct.Any())
+                    {
+                        var newCartItems = await CreateCartItems(nonExistingCartItemsByProduct);
+                        foreach (var newCartItem in newCartItems)
+                        {
+                            userCart.CartItems?.Add(newCartItem);
+                        }
+                    }
+                }
+
+                await _cartRepository.Update(userCart);
+            }
+
             await _workUnit.SaveChanges();
 
             return _mapper.Map<CartDto>(userCart);
         }
 
-        public async Task<Result<bool>> Clear(Guid cartId)
+        public async Task<Result<CartDto>> UpdateItems(List<CartItemDto> cartItemsDto)
         {
-            var userCart = await _cartRepository.Query().Include(x => x.CartItems).FirstOrDefaultAsync(x => x.PublicId == cartId);
+            var userCart = await GetUserCart();
             if (userCart == null)
-                return false;
+                return Result.NotFound("User cart not found");
+
+            var existingCartItems = userCart.CartItems?.ToList();
+            if (existingCartItems == null || !existingCartItems.Any())
+            {
+                var cartItems = await CreateCartItems(cartItemsDto);
+                userCart.CartItems = cartItems;
+            }
+            else
+            {
+                foreach (var cartItemDto in cartItemsDto)
+                {
+                    var existingCartItem = existingCartItems.FirstOrDefault(x => x.PublicId == cartItemDto.PublicId);
+                    if (existingCartItem != null)
+                    {
+                        existingCartItem.Count = cartItemDto.Count;
+                    }
+                }
+            }
+
+            await _cartRepository.Update(userCart);
+
+            return _mapper.Map<CartDto>(userCart);
+        }
+
+        public async Task<Result<bool>> RemoveItems(List<Guid> cartItemsPublicIds)
+        {
+            var userCart = await GetUserCart();
+            if (userCart == null)
+                return Result.NotFound("User cart not found");
+
+            var cartItemsForRemoving = userCart.CartItems?
+                .Where(x => cartItemsPublicIds.Contains(x.PublicId))
+                .ToList();
+
+            if (cartItemsForRemoving != null && cartItemsForRemoving.Any())
+            {
+                foreach (var cartItemForRemoving in cartItemsForRemoving)
+                    userCart.CartItems?.Remove(cartItemForRemoving);
+
+                await _cartRepository.Update(userCart);
+                await _workUnit.SaveChanges();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<Result<bool>> Clear()
+        {
+            var userCart = await GetUserCart();
+            if (userCart == null)
+                return Result.NotFound("User cart not found");
 
             userCart.CartItems?.Clear();
 
@@ -92,62 +156,65 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return true;
         }
 
-        private async Task<Result<bool>> ValidateCart(CartDto cartDto)
+        private async Task<Cart> GetUserCart()
         {
-            var userCart = await _cartRepository.Query(x => x.UserPublicId == cartDto.UserPublicId).FirstOrDefaultAsync();
-            if (userCart != null)
+            var user = _userAccessor.GetAppUser();
+
+            var userCart = await _cartRepository
+                .Query()
+                .Include(x => x.CartItems).ThenInclude(x => x.Product)
+                .FirstOrDefaultAsync(x => x.UserPublicId == user.Id);
+
+            return userCart;
+        }
+
+        private async Task<List<CartItem>> CreateCartItems(List<CartItemDto> cartItemsDto)
+        {
+            var incomeCartProductPublicIds = GetIncomeCartProductPublicIds(cartItemsDto);
+            var existingCartProducts = await GetExistingCartProducts(incomeCartProductPublicIds);
+            var publicIdToIdProjection = GetPublicIdToIdProjection(existingCartProducts);
+
+            var cartItems = cartItemsDto?.Select(x => CreateCartItem(x, publicIdToIdProjection)).ToList();
+
+            return cartItems;
+        }
+
+        private async Task<List<CartProduct>> GetExistingCartProducts(List<Guid>? cartProductPublicIds = null)
+        {
+            var existingCartProductsBaseQuery = _cartProductRepository.Query();
+
+            if (cartProductPublicIds != null && cartProductPublicIds.Any())
+                existingCartProductsBaseQuery = existingCartProductsBaseQuery.Where(x => cartProductPublicIds.Contains(x.PublicId));
+
+            var existingCartProducts = await existingCartProductsBaseQuery.ToListAsync();
+
+            return existingCartProducts;
+        }
+
+        private Cart CreateNewUserCart()
+        {
+            var user = _userAccessor.GetAppUser();
+
+            return new Cart
             {
-                return Result.ValidationError(new ValidationMessage { Field = "Cart", Message = "Cart already exists" });
-            }
+                UserPublicId = user.Id,
+                CouponCode = string.Empty
+            };
+        }
 
-            if (cartDto.UserPublicId == Guid.Empty)
-            {
-                return Result.ValidationError(new ValidationMessage { Field = nameof(cartDto.UserPublicId), Message = "User id can not be empty" });
-            }
+        private static List<Guid> GetIncomeCartProductPublicIds(List<CartItemDto> cartItemsDto)
+        {
+            var incomeCartProductPublicIds = cartItemsDto
+                   .Where(x => x.Product != null && x.Product.PublicId != Guid.Empty)
+                   .Select(x => x.Product.PublicId)
+                   .ToList();
 
-            var cartItemWithCountLessOrEqualToZero = cartDto?.CartItems?.Where(x => x.Count <= 0).ToList();
-            if (cartItemWithCountLessOrEqualToZero != null && cartItemWithCountLessOrEqualToZero.Any())
-            {
-                var validationErrors = cartItemWithCountLessOrEqualToZero
-                    .Select(x => new ValidationMessage
-                    {
-                        Field = nameof(CartItem.Count),
-                        Message = $"Cart item entity {x.PublicId} has no count"
-                    })
-                    .ToArray();
+            return incomeCartProductPublicIds;
+        }
 
-                return Result.ValidationError(validationErrors);
-            }
-
-            var cartItemWithNullProduct = cartDto?.CartItems?.Where(x => x.Product == null).ToList();
-            if (cartItemWithNullProduct != null && cartItemWithNullProduct.Any())
-            {
-                var validationErrors = cartItemWithNullProduct
-                    .Select(x => new ValidationMessage
-                    {
-                        Field = nameof(CartItem.Product),
-                        Message = $"Cart item entity {x.PublicId} has no product"
-                    })
-                    .ToList();
-
-                return Result.ValidationError(validationErrors);
-            }
-
-            var cartItemWithEmptyProductId = cartDto?.CartItems?.Where(x => x.Product != null && x.Product.PublicId == Guid.Empty).ToList();
-            if (cartItemWithEmptyProductId != null && cartItemWithEmptyProductId.Any())
-            {
-                var validationErrors = cartItemWithEmptyProductId
-                    .Select(x => new ValidationMessage
-                    {
-                        Field = nameof(CartItem.Product),
-                        Message = $"Cart item entity {x.PublicId} has empty product"
-                    })
-                    .ToList();
-
-                return Result.ValidationError(validationErrors);
-            }
-
-            return true;
+        private static Dictionary<Guid, int> GetPublicIdToIdProjection(List<CartProduct> cartProducts)
+        {
+            return cartProducts.ToDictionary(key => key.PublicId, value => value.Id);
         }
 
         private static CartItem CreateCartItem(CartItemDto cartItemDto, Dictionary<Guid, int> existedProductIds)
@@ -175,6 +242,33 @@ namespace Mango.Services.ShoppingCartAPI.Services
             }
 
             return cartItem;
+        }
+
+        private static List<CartItem> GetExistingCartItemsByProduct(List<CartItem> allExistingCartItems, List<Guid> productPublicIds)
+        {
+            var existingCartItemsByProduct = allExistingCartItems
+                .Where(existringCartItem => productPublicIds.Any(productPublicId => existringCartItem.Product.PublicId == productPublicId))
+                .ToList();
+
+            return existingCartItemsByProduct;
+        }
+
+        private static void UpdateExistingCartItemsCount(List<CartItem> existingCartItemsByProduct, List<CartItemDto> cartItemsDto)
+        {
+            foreach (var existingCartItemByProduct in existingCartItemsByProduct)
+            {
+                var additionalCount = cartItemsDto.FirstOrDefault(incomeCartItem => incomeCartItem.Product.PublicId == existingCartItemByProduct.Product.PublicId)?.Count ?? 0;
+                existingCartItemByProduct.Count += additionalCount;
+            }
+        }
+
+        private static List<CartItemDto> GetNonExistingCartItemsByProduct(List<CartItemDto> allIncomeCartItems, List<Guid> productPublicIds)
+        {
+            var nonExistingCartItemsByProduct = allIncomeCartItems
+                .Where(incomeCartItem => !productPublicIds.Any(productPublicId => incomeCartItem.Product.PublicId == productPublicId))
+                .ToList();
+
+            return nonExistingCartItemsByProduct;
         }
     }
 }
