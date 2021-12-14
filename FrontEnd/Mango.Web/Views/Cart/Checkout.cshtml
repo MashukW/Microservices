@@ -1,0 +1,123 @@
+﻿@model Mango.Web.Models.Carts.CartDto
+
+@if (Model != null && Model.CartItems.Count > 0)
+{
+	<input asp-for="PublicId" hidden />
+	<input asp-for="UserPublicId" hidden />
+	<input asp-for="CouponCode" hidden />
+	<input asp-for="TotalCost" hidden />
+	<input asp-for="DiscountAmount" hidden />
+
+	<form method="post">
+		<div>
+			<span style="font-size:25px;" class="text-warning">Enter details and place order :</span>
+			<br />
+		</div>
+		<div class="border mt-2">
+			<div class="container row">
+				<div class="col-7">
+					<div class="row">
+						<div class="col-12">
+							<label class="col-form-label">First Name :</label>
+							<input asp-for="FirstName" class="form-control" />
+						</div>
+						<div class="col-12">
+							<label class="col-form-label">Last Name :</label>
+							<input asp-for="LastName" class="form-control" />
+						</div>
+						<div class="col-12">
+							<label class="col-form-label">Email :</label>
+							<input asp-for="Email" class="form-control" />
+						</div>
+						<div class="col-12">
+							<label class="col-form-label">Phone Number :</label>
+							<input asp-for="PhoneNumber" class="form-control" />
+						</div>
+						<div class="col-12">
+							<label class="col-form-label">PickUp Time</label>
+							<input asp-for="PickupDateTime" class="form-control form_datetime" type="text">
+						</div>
+						<div class="col-12">
+							<label class="col-form-label">Card Number :</label>
+							<input asp-for="CardNumber" class="form-control" />
+						</div>
+						<div class="col-12">
+							<label class="col-form-label">CVV :</label>
+							<input asp-for="Cvv" class="form-control" />
+						</div>
+						<div class="col-12 pb-4">
+							<label class="col-form-label">Expiry :</label>
+							<input asp-for="ExpityMonthYear" placeholder="MMYY" class="form-control" />
+						</div>
+					</div>
+				</div>
+				<div class="col-5">
+					<div class="card mt-4">
+						<div class="card-body">
+							<div class=" d-none d-lg-block">
+								<div class="row text-danger">
+									<div class="col-6">
+										Product Details
+									</div>
+
+									<div class="col-3">
+										Price
+									</div>
+									<div class="col-3">
+										Count
+									</div>
+								</div>
+							</div>
+							<hr />
+
+							@foreach (var cartItem in Model.CartItems)
+							{
+								<div class="row h-100">
+									<div class="col-6">
+										<span style="font-size:20px">@cartItem.Product.Name</span>
+									</div>
+									<div class="col-3" style="font-size:11px;">
+										<span style="font-size:17px;">@cartItem.Product.Price</span>
+
+									</div>
+									<div class="col-3" style="font-size:11px;">
+										<span style="font-size:17px;">@cartItem.Count</span>
+									</div>
+								</div>
+							}
+							<hr />
+							<div class="row">
+								<div class="col-12 text-right pr-4 text-danger">
+									Total Cost :  @string.Format("{0:c}", Model.TotalCost) <br />
+									@if (Model.DiscountAmount > 0)
+									{
+										<span class="text-success">Discount Amount: @string.Format("{0:c}", Model.DiscountAmount)</span>
+									}
+								</div>
+							</div>
+						</div>
+						<div class="card-footer">
+							<div class="row">
+
+								<div class="col-12 ">
+									<button type="submit" class="btn btn-success form-control ">
+										<span>Place Order</span>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+}
+
+@section Scripts {
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+			$(".form_datetime").datetimepicker('setStartDate', new Date());
+		})
+	</script>
+}

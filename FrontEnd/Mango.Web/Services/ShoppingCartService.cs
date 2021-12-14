@@ -23,7 +23,7 @@ namespace Mango.Web.Services
             return getCartResponse;
         }
 
-        public async Task<Result<CartDto>> AddItems(List<CartItemDto> cartItemsDto, string? token = null)
+        public async Task<Result<CartDto>> AddItems(List<CartItemDto> cartItemsDto, string? token)
         {
             var requestDetails = RequestData.Create(cartItemsDto, AppConstants.ShoppingCartApi, $"api/cart/add-items", HttpMethod.Post, token);
 
@@ -31,7 +31,7 @@ namespace Mango.Web.Services
             return addCartResponse;
         }
 
-        public async Task<Result<CartDto>> UpdateItems(List<CartItemDto> cartItemsDto, string? token = null)
+        public async Task<Result<CartDto>> UpdateItems(List<CartItemDto> cartItemsDto, string? token)
         {
             var requestDetails = RequestData.Create(cartItemsDto, AppConstants.ShoppingCartApi, $"api/cart/update-items", HttpMethod.Put, token);
 
@@ -47,7 +47,23 @@ namespace Mango.Web.Services
             return removeCartItemResponse;
         }
 
-        public async Task<Result<bool>> Clear(string? token = null)
+        public async Task<Result<bool>> ApplyCoupon(string couponCode, string? token)
+        {
+            var requestDetails = RequestData.Create(couponCode, AppConstants.ShoppingCartApi, $"api/cart/apply-coupon", HttpMethod.Post, token);
+
+            var clearCartResponse = await _httpService.Send<bool>(requestDetails);
+            return clearCartResponse;
+        }
+
+        public async Task<Result<bool>> RemoveCoupon(string? token)
+        {
+            var requestDetails = RequestData.Create(AppConstants.ShoppingCartApi, $"api/cart/remove-coupon", HttpMethod.Delete, token);
+
+            var clearCartResponse = await _httpService.Send<bool>(requestDetails);
+            return clearCartResponse;
+        }
+
+        public async Task<Result<bool>> Clear(string? token)
         {
             var requestDetails = RequestData.Create(AppConstants.ShoppingCartApi, $"api/cart/clear", HttpMethod.Delete, token);
 

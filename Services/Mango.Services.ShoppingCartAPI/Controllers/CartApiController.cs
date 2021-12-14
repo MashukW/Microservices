@@ -8,11 +8,11 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
 {
     [ApiController]
     [Route("api/cart")]
-    public class CartController : ControllerBase
+    public class CartApiController : ControllerBase
     {
         private readonly ICartService _cartService;
 
-        public CartController(ICartService cartService)
+        public CartApiController(ICartService cartService)
         {
             _cartService = cartService;
         }
@@ -65,6 +65,34 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             try
             {
                 var isSuccess = await _cartService.RemoveItems(cartItemsPublicIds);
+                return isSuccess;
+            }
+            catch (Exception ex)
+            {
+                return Result.ServerError(ex.Message);
+            }
+        }
+
+        [HttpPost("apply-coupon")]
+        public async Task<ApiResult<bool>> ApplyCoupon([FromBody] string couponCode)
+        {
+            try
+            {
+                var isSuccess = await _cartService.ApplyCoupon(couponCode);
+                return isSuccess;
+            }
+            catch (Exception ex)
+            {
+                return Result.ServerError(ex.Message);
+            }
+        }
+
+        [HttpDelete("remove-coupon")]
+        public async Task<ApiResult<bool>> RemoveCoupon()
+        {
+            try
+            {
+                var isSuccess = await _cartService.RemoveCoupon();
                 return isSuccess;
             }
             catch (Exception ex)

@@ -12,11 +12,13 @@ namespace Mango.Web.Controllers
     public class CartController : Controller
     {
         private readonly IShoppingCartService _shoppingCartService;
+        private readonly ICouponService _couponService;
         private readonly IProductService _productService;
 
-        public CartController(IShoppingCartService shoppingCartService, IProductService productService)
+        public CartController(IShoppingCartService shoppingCartService, ICouponService couponService, IProductService productService)
         {
             _shoppingCartService = shoppingCartService;
+            _couponService = couponService;
             _productService = productService;
         }
 
@@ -26,10 +28,43 @@ namespace Mango.Web.Controllers
             CartDto userCart = new();
 
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            var response = await _shoppingCartService.Get(accessToken);
-            if (response.IsSuccess)
+            var cartResponse = await _shoppingCartService.Get(accessToken);
+            if (cartResponse.IsSuccess)
             {
-                userCart = response.Data ?? new CartDto();
+                userCart = cartResponse.Data ?? new CartDto();
+
+                if (!string.IsNullOrWhiteSpace(userCart.CouponCode))
+                {
+                    var couponResponse = await _couponService.Get(userCart.CouponCode);
+                    if (couponResponse.IsSuccess)
+                    {
+                        userCart.DiscountAmount = couponResponse.Data?.DiscountAmount;
+                    }                    
+                }
+            }
+
+            return View(userCart);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Checkout()
+        {
+            CartDto userCart = new();
+
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            var cartResponse = await _shoppingCartService.Get(accessToken);
+            if (cartResponse.IsSuccess)
+            {
+                userCart = cartResponse.Data ?? new CartDto();
+
+                if (!string.IsNullOrWhiteSpace(userCart.CouponCode))
+                {
+                    var couponResponse = await _couponService.Get(userCart.CouponCode);
+                    if (couponResponse.IsSuccess)
+                    {
+                        userCart.DiscountAmount = couponResponse.Data?.DiscountAmount;
+                    }
+                }
             }
 
             return View(userCart);
@@ -87,6 +122,24 @@ namespace Mango.Web.Controllers
             }
 
             return View($"~/Views/Product/ProductDetails.cshtml", product ?? new ProductDto());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ApplyCoupon(CartDto cartDto)
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            await _shoppingCartService.ApplyCoupon(cartDto.CouponCode, accessToken);
+            
+            return RedirectToAction("CartIndex");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveCoupon()
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            await _shoppingCartService.RemoveCoupon(accessToken);
+            
+            return RedirectToAction("CartIndex");
         }
     }
 }

@@ -13,6 +13,10 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
         Task<Result<bool>> RemoveItems(List<Guid> cartItemsPublicIds);
 
+        Task<Result<bool>> ApplyCoupon(string couponCode);
+
+        Task<Result<bool>> RemoveCoupon();
+
         Task<Result<bool>> Clear();
     }
 }

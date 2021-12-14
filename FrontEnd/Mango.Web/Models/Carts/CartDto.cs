@@ -8,7 +8,25 @@
 
         public string? CouponCode { get; set; }
 
+        public double? DiscountAmount { get; set; }
+
         public List<CartItemDto>? CartItems { get; set; }
+
+        public string? FirstName { get; set; }
+
+        public string? LastName { get; set; }
+
+        public DateTime PickupDateTime { get; set; }
+
+        public string? PhoneNumber { get; set; }
+
+        public string? Email { get; set; }
+
+        public string? CardNumber { get; set; }
+
+        public string? Cvv { get; set; }
+
+        public string? ExpityMonthYear { get; set; }
 
         public double TotalCost => CalculateTotalCost();
 
@@ -22,6 +40,11 @@
                 {
                     totalCost += cartItem.Count * cartItem.Product.Price;
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(CouponCode) && DiscountAmount != null)
+            {
+                totalCost -= DiscountAmount.Value;
             }
 
             return totalCost;

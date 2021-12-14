@@ -132,6 +132,9 @@ namespace Mango.Services.ShoppingCartAPI.Services
                 foreach (var cartItemForRemoving in cartItemsForRemoving)
                     userCart.CartItems?.Remove(cartItemForRemoving);
 
+                if (userCart.CartItems == null || userCart.CartItems.Count == 0)
+                    userCart.CouponCode = string.Empty;
+
                 await _cartRepository.Update(userCart);
                 await _workUnit.SaveChanges();
 
@@ -141,6 +144,32 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return false;
         }
 
+        public async Task<Result<bool>> ApplyCoupon(string couponCode)
+        {
+            var userCart = await GetUserCart();
+            if (userCart == null)
+                return false;
+
+            userCart.CouponCode = couponCode;
+            await _cartRepository.Update(userCart);
+            await _workUnit.SaveChanges();
+
+            return true;
+        }
+
+        public async Task<Result<bool>> RemoveCoupon()
+        {
+            var userCart = await GetUserCart();
+            if (userCart == null)
+                return false;
+
+            userCart.CouponCode = "";
+            await _cartRepository.Update(userCart);
+            await _workUnit.SaveChanges();
+
+            return true;
+        }
+
         public async Task<Result<bool>> Clear()
         {
             var userCart = await GetUserCart();
@@ -148,6 +177,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
                 return Result.NotFound("User cart not found");
 
             userCart.CartItems?.Clear();
+            userCart.CouponCode = string.Empty;
 
             await _cartRepository.Update(userCart);
 
