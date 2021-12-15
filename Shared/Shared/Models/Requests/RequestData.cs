@@ -49,11 +49,11 @@ namespace Shared.Models.Requests
         }
 
         public static RequestData Create(
-            string baseUrl,
-            string path,
+            string? baseUrl,
+            string? path,
             HttpMethod httpMethod,
-            string accessToken = "",
-            string authenticationScheme = "Bearer")
+            string? accessToken = "",
+            string? authenticationScheme = "Bearer")
         {
             var requestData = new RequestData
             {

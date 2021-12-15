@@ -1,18 +1,18 @@
-﻿using Mango.Web.Models.Products;
+﻿using Mango.Web.Models.View.Products;
 using Shared.Models.OperationResults;
 
 namespace Mango.Web.Services
 {
     public interface IProductService
     {
-        Task<Result<List<ProductDto>>> Get(string token);
+        Task<Result<List<ProductView>>> Get();
 
-        Task<Result<ProductDto>> Get(Guid productId, string token);
+        Task<Result<ProductView>> Get(Guid productId);
 
-        Task<Result<ProductDto>> Add(ProductDto productDto, string token);
+        Task<Result<ProductView>> Add(ProductView product);
 
-        Task<Result<ProductDto>> Update(ProductDto productDto, string token);
+        Task<Result<ProductView>> Update(ProductView product);
 
-        Task<Result<bool>> Remove(Guid productId, string token);
+        Task<Result<bool>> Remove(Guid productId);
     }
 }

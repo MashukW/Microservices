@@ -1,4 +1,4 @@
-﻿namespace Mango.Services.ShoppingCartAPI.Models
+﻿namespace Mango.Web.Models
 {
     public class AppUser
     {

@@ -101,6 +101,20 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             }
         }
 
+        [HttpPost("checkout")]
+        public async Task<ApiResult<bool>> Checkout()
+        {
+            try
+            {
+                var isSuccess = await _cartService.RemoveCoupon();
+                return isSuccess;
+            }
+            catch (Exception ex)
+            {
+                return Result.ServerError(ex.Message);
+            }
+        }
+
         [HttpDelete("clear")]
         public async Task<ApiResult<bool>> Clear()
         {

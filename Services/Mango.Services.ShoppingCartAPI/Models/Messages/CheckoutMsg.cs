@@ -1,9 +1,9 @@
-﻿namespace Mango.Web.Models.Carts
-{
-    public class CartDto
-    {
-        public Guid PublicId { get; set; }
+﻿using Mango.Services.ShoppingCartAPI.Models.Dto;
 
+namespace Mango.Services.ShoppingCartAPI.Models.Messages
+{
+    public class CheckoutMsg
+    {
         public Guid UserPublicId { get; set; }
 
         public string? CouponCode { get; set; }
@@ -22,13 +22,13 @@
 
         public string? Email { get; set; }
 
+        public double TotalCost => CalculateTotalCost();
+
         public string? CardNumber { get; set; }
 
         public string? Cvv { get; set; }
 
         public string? ExpityMonthYear { get; set; }
-
-        public double TotalCost => CalculateTotalCost();
 
         private double CalculateTotalCost()
         {

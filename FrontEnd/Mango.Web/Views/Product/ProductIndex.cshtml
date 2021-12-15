@@ -1,6 +1,5 @@
-﻿@using Mango.Web.Models.Products
-
-@model IEnumerable<ProductDto>
+﻿@using Mango.Web.Models.View.Products;
+@model IEnumerable<ProductView>
 
 <br />
 <br />
@@ -24,21 +23,24 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var product in Model)
+			@if (Model != null)
 			{
-				<tr>
-					<td>@product.Name</td>
-					<td>@product.CategoryName</td>
-					<td>@product.Price.ToString("c")</td>
-					<td>
-						<a asp-action="ProductEdit" class="btn btn-success" asp-route-productId="@product.PublicId">
-							<i class="fas fa-edit"></i>
-						</a>
-						<a asp-action="ProductDelete" class="btn btn-danger" asp-route-productId="@product.PublicId">
-							<i class="fas fa-trash"></i>
-						</a>
-					</td>
-				</tr>
+				@foreach (var product in Model)
+				{
+					<tr>
+						<td>@product.Name</td>
+						<td>@product.CategoryName</td>
+						<td>@product.Price.ToString("c")</td>
+						<td>
+							<a asp-action="ProductEdit" class="btn btn-success" asp-route-productId="@product.PublicId">
+								<i class="fas fa-edit"></i>
+							</a>
+							<a asp-action="ProductDelete" class="btn btn-danger" asp-route-productId="@product.PublicId">
+								<i class="fas fa-trash"></i>
+							</a>
+						</td>
+					</tr>
+				}
 			}
 		</tbody>
 	</table>

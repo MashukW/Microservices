@@ -1,13 +1,23 @@
 using Mango.Web;
+using Mango.Web.Accessors;
+using Mango.Web.Accessors.Interfaces;
 using Mango.Web.Services;
 using Shared.Services;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpClient<IProductService, ProductService>();
+builder.Services.AddHttpClient();
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IUserAccessor, UserAccessor>();
+builder.Services.AddSingleton<ITokenAccessor, TokenAccessor>();
+
 AppConstants.ProductApiBase = builder.Configuration["ServiceUrls:ProductApi"];
 AppConstants.ShoppingCartApi = builder.Configuration["ServiceUrls:ShoppingCartApi"];
 AppConstants.CouponApi = builder.Configuration["ServiceUrls:CouponApi"];
+
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddScoped<IHttpService, HttpService>();
 builder.Services.AddScoped<IProductService, ProductService>();

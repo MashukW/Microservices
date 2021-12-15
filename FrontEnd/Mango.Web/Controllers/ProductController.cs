@@ -1,6 +1,5 @@
-﻿using Mango.Web.Models.Products;
+﻿using Mango.Web.Models.View.Products;
 using Mango.Web.Services;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,30 +18,28 @@ namespace Mango.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> ProductIndex()
         {
-            List<ProductDto> products = new();
+            List<ProductView> productViews = new();
 
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-            var response = await _productService.Get(accessToken);
-            if (response.IsSuccess)
+            var getProductsResult = await _productService.Get();
+            if (getProductsResult != null && getProductsResult.IsSuccess && getProductsResult.Data != null)
             {
-                products = response.Data;
+                productViews = getProductsResult.Data;
             }
 
-            return View(products);
+            return View(productViews);
         }
 
         [HttpGet]
         public async Task<IActionResult> ProductDetails(Guid productId)
         {
-            ProductDto product = new();
-            var response = await _productService.Get(productId, "");
-            if (response.IsSuccess)
+            ProductView productView = new();
+            var getProductResult = await _productService.Get(productId);
+            if (getProductResult != null && getProductResult.IsSuccess && getProductResult.Data != null)
             {
-                product = response.Data;
+                productView = getProductResult.Data;
             }
 
-            return View(product);
+            return View(productView);
         }
 
         [HttpGet]
@@ -53,33 +50,28 @@ namespace Mango.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProductCreate(ProductDto productDto)
+        public async Task<IActionResult> ProductCreate(ProductView productView)
         {
             if (ModelState.IsValid)
             {
-                var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-                var response = await _productService.Add(productDto, accessToken);
+                var response = await _productService.Add(productView);
                 if (response.IsSuccess)
                 {
                     return RedirectToAction(nameof(ProductIndex));
                 }
             }
 
-            return View(productDto);
+            return View(productView);
         }
 
         [HttpGet]
         public async Task<IActionResult> ProductEdit(Guid productId)
         {
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-
-            var response = await _productService.Get(productId, accessToken);
-            if (response.IsSuccess)
+            var getProductResult = await _productService.Get(productId);
+            if (getProductResult != null && getProductResult.IsSuccess && getProductResult.Data != null)
             {
-                var product = response.Data;
-                return View(product);
+                var productView = getProductResult.Data;
+                return View(productView);
             }
 
             return NotFound();
@@ -87,32 +79,28 @@ namespace Mango.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProductEdit(ProductDto productDto)
+        public async Task<IActionResult> ProductEdit(ProductView productView)
         {
             if (ModelState.IsValid)
             {
-                var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-                var response = await _productService.Update(productDto, accessToken);
+                var response = await _productService.Update(productView);
                 if (response.IsSuccess)
                 {
                     return RedirectToAction(nameof(ProductIndex));
                 }
             }
 
-            return View(productDto);
+            return View(productView);
         }
 
         [HttpGet]
         public async Task<IActionResult> ProductDelete(Guid productId)
         {
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-            var response = await _productService.Get(productId, accessToken);
-            if (response.IsSuccess)
+            var getProductResult = await _productService.Get(productId);
+            if (getProductResult != null && getProductResult.IsSuccess && getProductResult.Data != null)
             {
-                var product = response.Data;
-                return View(product);
+                var productView = getProductResult.Data;
+                return View(productView);
             }
 
             return NotFound();
@@ -120,20 +108,18 @@ namespace Mango.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProductDelete(ProductDto productDto)
+        public async Task<IActionResult> ProductDelete(ProductView productView)
         {
             if (ModelState.IsValid)
             {
-                var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-                var response = await _productService.Remove(productDto.PublicId, accessToken);
+                var response = await _productService.Remove(productView.PublicId);
                 if (response.IsSuccess)
                 {
                     return RedirectToAction(nameof(ProductIndex));
                 }
             }
 
-            return View(productDto);
+            return View(productView);
         }
     }
 }

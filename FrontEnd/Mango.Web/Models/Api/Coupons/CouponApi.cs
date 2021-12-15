@@ -1,6 +1,6 @@
-﻿namespace Mango.Web.Models.Coupons
+﻿namespace Mango.Web.Models.Api.Coupons
 {
-    public class CouponDto
+    public class CouponApi
     {
         public Guid PublicId { get; set; }
 

@@ -1,4 +1,4 @@
-﻿@model Mango.Web.Models.Carts.CartDto
+﻿@model Mango.Web.Models.View.Carts.CartView
 
 @if (Model?.CartItems != null && Model.CartItems.Count > 0)
 {
@@ -91,7 +91,7 @@
 					<div class="col-6 col-md-3 offset-md-6">
 					</div>
 					<div class="col-6 col-md-3">
-						<a asp-controller="Cart" asp-action="Checkout" asp-route-cartPublicId="@Model.PublicId" class="btn btn-success form-control ">
+						<a asp-controller="Checkout" asp-action="CheckoutIndex" class="btn btn-success form-control ">
 							<span>Checkout</span>
 						</a>
 					</div>

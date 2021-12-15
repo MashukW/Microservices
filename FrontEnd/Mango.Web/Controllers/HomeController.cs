@@ -1,5 +1,5 @@
 ﻿using Mango.Web.Models;
-using Mango.Web.Models.Products;
+using Mango.Web.Models.View.Products;
 using Mango.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +18,14 @@ namespace Mango.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            List<ProductDto> products = new();
-            var response = await _productService.Get("");
-            if (response.IsSuccess)
+            List<ProductView> productViews = new();
+            var getProductsResult = await _productService.Get();
+            if (getProductsResult != null && getProductsResult.IsSuccess && getProductsResult.Data != null)
             {
-                products = response.Data;
+                productViews = getProductsResult.Data;
             }
 
-            return View(products);
+            return View(productViews);
         }
 
         [HttpGet]

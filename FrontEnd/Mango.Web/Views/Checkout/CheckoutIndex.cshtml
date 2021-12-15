@@ -1,12 +1,12 @@
-﻿@model Mango.Web.Models.Carts.CartDto
+﻿@model Mango.Web.Models.View.Checkouts.CheckoutView
 
-@if (Model != null && Model.CartItems.Count > 0)
+@if (Model?.Cart?.CartItems != null && Model?.Cart?.CartItems.Count > 0)
 {
-	<input asp-for="PublicId" hidden />
-	<input asp-for="UserPublicId" hidden />
-	<input asp-for="CouponCode" hidden />
-	<input asp-for="TotalCost" hidden />
-	<input asp-for="DiscountAmount" hidden />
+	<input asp-for="Cart.PublicId" hidden />
+	<input asp-for="Cart.UserPublicId" hidden />
+	<input asp-for="Cart.CouponCode" hidden />
+	<input asp-for="Cart.TotalCost" hidden />
+	<input asp-for="Cart.DiscountAmount" hidden />
 
 	<form method="post">
 		<div>
@@ -19,19 +19,19 @@
 					<div class="row">
 						<div class="col-12">
 							<label class="col-form-label">First Name :</label>
-							<input asp-for="FirstName" class="form-control" />
+							<input asp-for="UserDetails.FirstName" class="form-control" />
 						</div>
 						<div class="col-12">
 							<label class="col-form-label">Last Name :</label>
-							<input asp-for="LastName" class="form-control" />
+							<input asp-for="UserDetails.LastName" class="form-control" />
 						</div>
 						<div class="col-12">
 							<label class="col-form-label">Email :</label>
-							<input asp-for="Email" class="form-control" />
+							<input asp-for="UserDetails.Email" class="form-control" />
 						</div>
 						<div class="col-12">
 							<label class="col-form-label">Phone Number :</label>
-							<input asp-for="PhoneNumber" class="form-control" />
+							<input asp-for="UserDetails.PhoneNumber" class="form-control" />
 						</div>
 						<div class="col-12">
 							<label class="col-form-label">PickUp Time</label>
@@ -39,15 +39,15 @@
 						</div>
 						<div class="col-12">
 							<label class="col-form-label">Card Number :</label>
-							<input asp-for="CardNumber" class="form-control" />
+							<input asp-for="PaymentCard.CardNumber" class="form-control" />
 						</div>
 						<div class="col-12">
 							<label class="col-form-label">CVV :</label>
-							<input asp-for="Cvv" class="form-control" />
+							<input asp-for="PaymentCard.Cvv" class="form-control" />
 						</div>
 						<div class="col-12 pb-4">
 							<label class="col-form-label">Expiry :</label>
-							<input asp-for="ExpityMonthYear" placeholder="MMYY" class="form-control" />
+							<input asp-for="PaymentCard.ExpityMonthYear" placeholder="MMYY" class="form-control" />
 						</div>
 					</div>
 				</div>
@@ -70,7 +70,7 @@
 							</div>
 							<hr />
 
-							@foreach (var cartItem in Model.CartItems)
+							@foreach (var cartItem in Model.Cart.CartItems)
 							{
 								<div class="row h-100">
 									<div class="col-6">
@@ -88,10 +88,10 @@
 							<hr />
 							<div class="row">
 								<div class="col-12 text-right pr-4 text-danger">
-									Total Cost :  @string.Format("{0:c}", Model.TotalCost) <br />
-									@if (Model.DiscountAmount > 0)
+									Total Cost :  @string.Format("{0:c}", Model.Cart.TotalCost) <br />
+									@if (Model.Cart.DiscountAmount > 0)
 									{
-										<span class="text-success">Discount Amount: @string.Format("{0:c}", Model.DiscountAmount)</span>
+										<span class="text-success">Discount Amount: @string.Format("{0:c}", Model.Cart.DiscountAmount)</span>
 									}
 								</div>
 							</div>

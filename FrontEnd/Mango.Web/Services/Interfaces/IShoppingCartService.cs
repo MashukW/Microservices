@@ -1,22 +1,22 @@
-﻿using Mango.Web.Models.Carts;
+﻿using Mango.Web.Models.View.Carts;
 using Shared.Models.OperationResults;
 
 namespace Mango.Web.Services
 {
     public interface IShoppingCartService
     {
-        Task<Result<CartDto>> Get(string? token = null);
+        Task<Result<CartView>> Get();
 
-        Task<Result<CartDto>> AddItems(List<CartItemDto> cartItemsDto, string? token);
+        Task<Result<CartView>> AddItems(List<CartItemView> cartItems);
 
-        Task<Result<CartDto>> UpdateItems(List<CartItemDto> cartItemsDto, string? token);
+        Task<Result<CartView>> UpdateItems(List<CartItemView> cartItems);
 
-        Task<Result<bool>> RemoveItems(List<Guid> cartItemPublicIds, string? token);
+        Task<Result<bool>> RemoveItems(List<Guid> cartItemPublicIds);
 
-        Task<Result<bool>> ApplyCoupon(string couponCode, string? token);
+        Task<Result<bool>> ApplyCoupon(string couponCode);
 
-        Task<Result<bool>> RemoveCoupon(string? token);
+        Task<Result<bool>> RemoveCoupon();
 
-        Task<Result<bool>> Clear(string? token);
+        Task<Result<bool>> Clear();
     }
 }

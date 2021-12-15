@@ -1,31 +1,33 @@
-﻿@using Mango.Web.Models.Products
-
-@model IEnumerable<ProductDto>
+﻿@using Mango.Web.Models.View.Products;
+@model IEnumerable<ProductView>
 
 <form>
 	<div class="container row">
-		@foreach (var product in Model)
+		@if (Model != null)
 		{
-			<div class="col-4 ">
-				<div class="p-0 my-3 border">
-					<div class="card">
-						<img src="@product.ImageUrl" class="card-img-top">
-						<div class="card-body">
-							<h3 class="card-title text-success">@product.Name</h3>
-							<span class="badge badge-light mb-2 ">@product.CategoryName</span>
-							<p class="card-text">@Html.Raw(product.Description)</p>
-							<div class="row">
-								<div class="col pt-1">
-									<span style="font-size:23px;">@string.Format("{0:c}", product.Price)</span>
-								</div>
-								<div class="col">
-									<a asp-controller="Product" asp-action="ProductDetails" asp-route-productId="@product.PublicId" class="btn btn-success form-control">Details</a>
+			foreach (var product in Model)
+			{
+				<div class="col-4 ">
+					<div class="p-0 my-3 border">
+						<div class="card">
+							<img src="@product.ImageUrl" class="card-img-top">
+							<div class="card-body">
+								<h3 class="card-title text-success">@product.Name</h3>
+								<span class="badge badge-light mb-2 ">@product.CategoryName</span>
+								<p class="card-text">@Html.Raw(product.Description)</p>
+								<div class="row">
+									<div class="col pt-1">
+										<span style="font-size:23px;">@string.Format("{0:c}", product.Price)</span>
+									</div>
+									<div class="col">
+										<a asp-controller="Product" asp-action="ProductDetails" asp-route-productId="@product.PublicId" class="btn btn-success form-control">Details</a>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
+			}
 		}
 	</div>
 </form>
