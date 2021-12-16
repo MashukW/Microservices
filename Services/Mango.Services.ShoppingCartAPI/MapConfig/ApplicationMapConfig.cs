@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Mango.Services.ShoppingCartAPI.Database.Entities;
-using Mango.Services.ShoppingCartAPI.Models.Dto;
+using Mango.Services.ShoppingCartAPI.Models.Api;
 
 namespace Mango.Services.ShoppingCartAPI.MapConfig
 {
@@ -11,9 +11,9 @@ namespace Mango.Services.ShoppingCartAPI.MapConfig
             // SourceMemberNamingConvention = new LowerUnderscoreNamingConvention();
             // DestinationMemberNamingConvention = new PascalCaseNamingConvention();
 
-            CreateMap<CartDto, Cart>().ReverseMap();
-            CreateMap<CartItemDto, CartItem>().ReverseMap();
-            CreateMap<CartProductDto, CartProduct>().ReverseMap();
+            CreateMap<CartApi, Cart>().ReverseMap();
+            CreateMap<CartItemApi, CartItem>().ReverseMap();
+            CreateMap<CartProductApi, CartProduct>().ReverseMap();
 
         }
     }

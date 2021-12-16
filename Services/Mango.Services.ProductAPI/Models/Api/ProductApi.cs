@@ -1,6 +1,6 @@
-﻿namespace Mango.Services.ProductAPI.Models.Dto
+﻿namespace Mango.Services.ProductAPI.Models.Api
 {
-    public class ProductDto
+    public class ProductApi
     {
         public Guid PublicId { get; set; }
 

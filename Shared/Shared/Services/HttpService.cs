@@ -1,5 +1,4 @@
 ﻿using Shared.Configurations;
-using Shared.Models;
 using Shared.Models.OperationResults;
 using Shared.Models.Requests;
 using System.Net.Http.Headers;
@@ -24,13 +23,13 @@ namespace Shared.Services
                 var response = await BaseSend(requestData);
                 var responseContent = await response.Content.ReadAsStringAsync();
 
-                if (response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode && !string.IsNullOrWhiteSpace(responseContent))
                 {
                     var responseModel = JsonSerializer.Deserialize<Result<TOutData>>(responseContent, JsonOptionsConfiguration.Options);
-                    return responseModel;
+                    return responseModel ?? Result.ServerError("Can not parse model");
                 }
 
-                return JsonSerializer.Deserialize<Result>(responseContent, JsonOptionsConfiguration.Options);
+                return Result.ServerError(responseContent ?? "An error occurred on the request");
             }
             catch (Exception ex)
             {

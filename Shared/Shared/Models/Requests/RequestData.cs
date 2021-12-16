@@ -5,7 +5,15 @@ namespace Shared.Models.Requests
 {
     public class RequestData
     {
-        protected RequestData() { }
+        protected RequestData()
+        {
+            BaseUrl = string.Empty;
+            Path = string.Empty;
+            HttpMethod = HttpMethod.Get;
+            Content = string.Empty;
+            AccessToken = string.Empty;
+            AuthenticationScheme = string.Empty;
+        }
 
         public string BaseUrl { get; protected set; }
 
@@ -49,11 +57,11 @@ namespace Shared.Models.Requests
         }
 
         public static RequestData Create(
-            string? baseUrl,
-            string? path,
+            string baseUrl,
+            string path,
             HttpMethod httpMethod,
-            string? accessToken = "",
-            string? authenticationScheme = "Bearer")
+            string accessToken = "",
+            string authenticationScheme = "Bearer")
         {
             var requestData = new RequestData
             {

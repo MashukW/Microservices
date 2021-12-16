@@ -4,6 +4,12 @@ namespace Mango.Services.ShoppingCartAPI.Database.Entities
 {
     public class CartItem : DateTrackedPublicEntity
     {
+        public CartItem()
+        {
+            Cart = new Cart();
+            Product = new CartProduct();
+        }
+
         public int Count { get; set; }
 
         public int CartId { get; set; }

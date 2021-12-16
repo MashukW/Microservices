@@ -1,15 +1,15 @@
-﻿using Mango.Services.ProductAPI.Models.Dto;
+﻿using Mango.Services.ProductAPI.Models.Api;
 using Shared.Models.OperationResults;
 
 namespace Mango.Services.ProductAPI.Repository
 {
     public interface IProductService
     {
-        Task<Result<List<ProductDto>>> Get();
+        Task<Result<List<ProductApi>>> Get();
 
-        Task<Result<ProductDto>> Get(Guid productId);
+        Task<Result<ProductApi>> Get(Guid productId);
 
-        Task<Result<ProductDto>> AddUpdate(ProductDto product);
+        Task<Result<ProductApi>> AddUpdate(ProductApi product);
 
         Task<Result<bool>> Remove(Guid productId);
     }

@@ -1,15 +1,15 @@
-﻿using Mango.Services.ShoppingCartAPI.Models.Dto;
+﻿using Mango.Services.ShoppingCartAPI.Models.Api;
 using Shared.Models.OperationResults;
 
 namespace Mango.Services.ShoppingCartAPI.Services
 {
     public interface ICartService
     {
-        Task<Result<CartDto>> Get();
+        Task<Result<CartApi>> Get();
 
-        Task<Result<CartDto>> AddItems(List<CartItemDto> cartItemsDto);
+        Task<Result<CartApi>> AddItems(List<CartItemApi> cartItemsDto);
 
-        Task<Result<CartDto>> UpdateItems(List<CartItemDto> cartItemsDto);
+        Task<Result<CartApi>> UpdateItems(List<CartItemApi> cartItemsDto);
 
         Task<Result<bool>> RemoveItems(List<Guid> cartItemsPublicIds);
 

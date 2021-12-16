@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Mango.Services.ProductAPI.Database.Entities;
-using Mango.Services.ProductAPI.Models.Dto;
+using Mango.Services.ProductAPI.Models.Api;
 
 namespace Mango.Services.ProductAPI
 {
@@ -11,8 +11,8 @@ namespace Mango.Services.ProductAPI
             // SourceMemberNamingConvention = new LowerUnderscoreNamingConvention();
             // DestinationMemberNamingConvention = new PascalCaseNamingConvention();
 
-            CreateMap<ProductDto, Product>();
-            CreateMap<Product, ProductDto>();
+            CreateMap<ProductApi, Product>();
+            CreateMap<Product, ProductApi>();
         }
     }
 }

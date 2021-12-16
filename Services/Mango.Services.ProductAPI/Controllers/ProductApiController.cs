@@ -1,4 +1,4 @@
-﻿using Mango.Services.ProductAPI.Models.Dto;
+﻿using Mango.Services.ProductAPI.Models.Api;
 using Mango.Services.ProductAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +19,7 @@ namespace Mango.Services.ProductAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ApiResult<List<ProductDto>>> Get()
+        public async Task<ApiResult<List<ProductApi>>> Get()
         {
             try
             {
@@ -33,7 +33,7 @@ namespace Mango.Services.ProductAPI.Controllers
         }
 
         [HttpGet("{productId}")]
-        public async Task<ApiResult<ProductDto>> Get(Guid productId)
+        public async Task<ApiResult<ProductApi>> Get(Guid productId)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace Mango.Services.ProductAPI.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<ApiResult<ProductDto>> Add([FromBody] ProductDto productDto)
+        public async Task<ApiResult<ProductApi>> Add([FromBody] ProductApi productDto)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Mango.Services.ProductAPI.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<ApiResult<ProductDto>> Update([FromBody] ProductDto productDto)
+        public async Task<ApiResult<ProductApi>> Update([FromBody] ProductApi productDto)
         {
             try
             {

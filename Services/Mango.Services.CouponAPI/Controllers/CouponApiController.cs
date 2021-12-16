@@ -1,4 +1,4 @@
-using Mango.Services.CouponAPI.Models;
+using Mango.Services.CouponAPI.Models.Api;
 using Mango.Services.CouponAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api;
@@ -18,7 +18,7 @@ namespace Mango.Services.CouponAPI.Controllers
         }
 
         [HttpGet("{couponCode}")]
-        public async Task<ApiResult<CouponDto>> Get(string couponCode)
+        public async Task<ApiResult<CouponApi>> Get(string couponCode)
         {
             try
             {

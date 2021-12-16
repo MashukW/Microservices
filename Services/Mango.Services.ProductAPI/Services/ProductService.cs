@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Mango.Services.ProductAPI.Database.Entities;
-using Mango.Services.ProductAPI.Models.Dto;
+using Mango.Services.ProductAPI.Models.Api;
 using Mango.Services.ProductAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Shared.Database.Repositories;
@@ -21,21 +21,21 @@ namespace Mango.Services.ProductAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<Result<List<ProductDto>>> Get()
+        public async Task<Result<List<ProductApi>>> Get()
         {
             List<Product> products = await _productRepository.Get();
-            return _mapper.Map<List<ProductDto>>(products);
+            return _mapper.Map<List<ProductApi>>(products);
         }
 
-        public async Task<Result<ProductDto>> Get(Guid productId)
+        public async Task<Result<ProductApi>> Get(Guid productId)
         {
             var product = await _productRepository.Query(x => x.PublicId == productId).FirstOrDefaultAsync();
-            return _mapper.Map<ProductDto>(product);
+            return _mapper.Map<ProductApi>(product);
         }
 
-        public async Task<Result<ProductDto>> AddUpdate(ProductDto productDto)
+        public async Task<Result<ProductApi>> AddUpdate(ProductApi productDto)
         {
-            var product = _mapper.Map<ProductDto, Product>(productDto);
+            var product = _mapper.Map<ProductApi, Product>(productDto);
             if (product.PublicId == Guid.Empty)
             {
                 await _productRepository.Add(product);
@@ -47,7 +47,7 @@ namespace Mango.Services.ProductAPI.Services
 
             await _workUnit.SaveChanges();
 
-            return _mapper.Map<Product, ProductDto>(product);
+            return _mapper.Map<Product, ProductApi>(product);
         }
 
         public async Task<Result<bool>> Remove(Guid productId)
@@ -65,7 +65,7 @@ namespace Mango.Services.ProductAPI.Services
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

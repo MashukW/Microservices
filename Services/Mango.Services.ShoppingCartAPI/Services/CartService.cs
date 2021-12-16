@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Mango.Services.ShoppingCartAPI.Accessors.Interfaces;
 using Mango.Services.ShoppingCartAPI.Database.Entities;
-using Mango.Services.ShoppingCartAPI.Models.Dto;
+using Mango.Services.ShoppingCartAPI.Models.Api;
 using Microsoft.EntityFrameworkCore;
 using Shared.Database.Repositories;
 using Shared.Models.OperationResults;
@@ -34,17 +34,17 @@ namespace Mango.Services.ShoppingCartAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<Result<CartDto>> Get()
+        public async Task<Result<CartApi>> Get()
         {
             var userCart = await GetUserCart();
             if (userCart == null)
                 userCart = CreateNewUserCart();
 
-            var userCartDto = _mapper.Map<CartDto>(userCart);
+            var userCartDto = _mapper.Map<CartApi>(userCart);
             return userCartDto;
         }
 
-        public async Task<Result<CartDto>> AddItems(List<CartItemDto> cartItemsDto)
+        public async Task<Result<CartApi>> AddItems(List<CartItemApi> cartItemsDto)
         {
             var userCart = await GetUserCart();
             if (userCart == null)
@@ -85,10 +85,10 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
             await _workUnit.SaveChanges();
 
-            return _mapper.Map<CartDto>(userCart);
+            return _mapper.Map<CartApi>(userCart);
         }
 
-        public async Task<Result<CartDto>> UpdateItems(List<CartItemDto> cartItemsDto)
+        public async Task<Result<CartApi>> UpdateItems(List<CartItemApi> cartItemsDto)
         {
             var userCart = await GetUserCart();
             if (userCart == null)
@@ -114,7 +114,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
             await _cartRepository.Update(userCart);
 
-            return _mapper.Map<CartDto>(userCart);
+            return _mapper.Map<CartApi>(userCart);
         }
 
         public async Task<Result<bool>> RemoveItems(List<Guid> cartItemsPublicIds)
@@ -195,10 +195,10 @@ namespace Mango.Services.ShoppingCartAPI.Services
                 .Include(x => x.CartItems).ThenInclude(x => x.Product)
                 .FirstOrDefaultAsync(x => x.UserPublicId == user.Id);
 
-            return userCart;
+            return userCart ?? new Cart();
         }
 
-        private async Task<List<CartItem>> CreateCartItems(List<CartItemDto> cartItemsDto)
+        private async Task<List<CartItem>> CreateCartItems(List<CartItemApi> cartItemsDto)
         {
             var incomeCartProductPublicIds = GetIncomeCartProductPublicIds(cartItemsDto);
             var existingCartProducts = await GetExistingCartProducts(incomeCartProductPublicIds);
@@ -206,7 +206,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
             var cartItems = cartItemsDto?.Select(x => CreateCartItem(x, publicIdToIdProjection)).ToList();
 
-            return cartItems;
+            return cartItems ?? new List<CartItem>();
         }
 
         private async Task<List<CartProduct>> GetExistingCartProducts(List<Guid>? cartProductPublicIds = null)
@@ -232,7 +232,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             };
         }
 
-        private static List<Guid> GetIncomeCartProductPublicIds(List<CartItemDto> cartItemsDto)
+        private static List<Guid> GetIncomeCartProductPublicIds(List<CartItemApi> cartItemsDto)
         {
             var incomeCartProductPublicIds = cartItemsDto
                    .Where(x => x.Product != null && x.Product.PublicId != Guid.Empty)
@@ -247,7 +247,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return cartProducts.ToDictionary(key => key.PublicId, value => value.Id);
         }
 
-        private static CartItem CreateCartItem(CartItemDto cartItemDto, Dictionary<Guid, int> existedProductIds)
+        private static CartItem CreateCartItem(CartItemApi cartItemDto, Dictionary<Guid, int> existedProductIds)
         {
             var cartItem = new CartItem
             {
@@ -283,7 +283,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return existingCartItemsByProduct;
         }
 
-        private static void UpdateExistingCartItemsCount(List<CartItem> existingCartItemsByProduct, List<CartItemDto> cartItemsDto)
+        private static void UpdateExistingCartItemsCount(List<CartItem> existingCartItemsByProduct, List<CartItemApi> cartItemsDto)
         {
             foreach (var existingCartItemByProduct in existingCartItemsByProduct)
             {
@@ -292,7 +292,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             }
         }
 
-        private static List<CartItemDto> GetNonExistingCartItemsByProduct(List<CartItemDto> allIncomeCartItems, List<Guid> productPublicIds)
+        private static List<CartItemApi> GetNonExistingCartItemsByProduct(List<CartItemApi> allIncomeCartItems, List<Guid> productPublicIds)
         {
             var nonExistingCartItemsByProduct = allIncomeCartItems
                 .Where(incomeCartItem => !productPublicIds.Any(productPublicId => incomeCartItem.Product.PublicId == productPublicId))

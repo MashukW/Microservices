@@ -2,6 +2,14 @@
 {
     public class AppUser
     {
+        public AppUser()
+        {
+            Email = string.Empty;
+            FirstName = string.Empty;
+            LastName = string.Empty;
+            Roles = Array.Empty<string>();
+        }
+
         public Guid Id { get; set; }
 
         public string Email { get; set; }

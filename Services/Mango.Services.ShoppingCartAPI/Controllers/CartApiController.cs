@@ -1,4 +1,4 @@
-using Mango.Services.ShoppingCartAPI.Models.Dto;
+using Mango.Services.ShoppingCartAPI.Models.Api;
 using Mango.Services.ShoppingCartAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Api;
@@ -18,7 +18,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ApiResult<CartDto>> Get()
+        public async Task<ApiResult<CartApi>> Get()
         {
             try
             {
@@ -32,7 +32,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpPost("add-items")]
-        public async Task<ApiResult<CartDto>> AddItems([FromBody] List<CartItemDto> cartItemsDto)
+        public async Task<ApiResult<CartApi>> AddItems([FromBody] List<CartItemApi> cartItemsDto)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpPut("update-items")]
-        public async Task<ApiResult<CartDto>> UpdateItems([FromBody] List<CartItemDto> cartItemsDto)
+        public async Task<ApiResult<CartApi>> UpdateItems([FromBody] List<CartItemApi> cartItemsDto)
         {
             try
             {
