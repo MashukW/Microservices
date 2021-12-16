@@ -1,4 +1,5 @@
 ﻿using Mango.Web.Models.View.Carts;
+using Mango.Web.Models.View.Checkouts;
 using Shared.Models.OperationResults;
 
 namespace Mango.Web.Services
@@ -16,6 +17,8 @@ namespace Mango.Web.Services
         Task<Result<bool>> ApplyCoupon(string couponCode);
 
         Task<Result<bool>> RemoveCoupon();
+
+        Task<Result<bool>> Checkout(CheckoutView checkout);
 
         Task<Result<bool>> Clear();
     }

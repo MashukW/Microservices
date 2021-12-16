@@ -6,8 +6,8 @@ namespace Mango.Web.Models.Api.Checkouts
     {
         public CheckoutApi()
         {
-            CouponCode = string.Empty;
             CartItems = new List<CartItemApi>();
+            CouponCode = string.Empty;
 
             FirstName = string.Empty;
             LastName = string.Empty;
@@ -20,7 +20,6 @@ namespace Mango.Web.Models.Api.Checkouts
         }
 
         public DateTime PickupDateTime { get; set; }
-
 
         public List<CartItemApi> CartItems { get; set; }
 

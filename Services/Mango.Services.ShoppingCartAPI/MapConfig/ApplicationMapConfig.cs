@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Mango.Services.ShoppingCartAPI.Database.Entities;
 using Mango.Services.ShoppingCartAPI.Models.Api;
+using Mango.Services.ShoppingCartAPI.Models.Messages;
 
 namespace Mango.Services.ShoppingCartAPI.MapConfig
 {
@@ -15,6 +16,7 @@ namespace Mango.Services.ShoppingCartAPI.MapConfig
             CreateMap<CartItemApi, CartItem>().ReverseMap();
             CreateMap<CartProductApi, CartProduct>().ReverseMap();
 
+            CreateMap<CheckoutApi, CheckoutMessage>();
         }
     }
 }

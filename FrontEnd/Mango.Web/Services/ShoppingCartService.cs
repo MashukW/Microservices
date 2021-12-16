@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Mango.Web.Accessors.Interfaces;
 using Mango.Web.Models.Api.Carts;
+using Mango.Web.Models.Api.Checkouts;
 using Mango.Web.Models.View.Carts;
+using Mango.Web.Models.View.Checkouts;
 using Shared.Models.OperationResults;
 using Shared.Models.Requests;
 using Shared.Services;
@@ -49,6 +51,7 @@ namespace Mango.Web.Services
         public async Task<Result<CartView>> AddItems(List<CartItemView> cartItems)
         {
             var token = await _tokenAccessor.GetAccessToken();
+
             var cartItemsApi = _mapper.Map<List<CartItemApi>>(cartItems);
             var requestDetails = RequestData.Create(cartItemsApi, AppConstants.ShoppingCartApi, $"api/cart/add-items", HttpMethod.Post, token);
 
@@ -112,6 +115,17 @@ namespace Mango.Web.Services
 
             var clearCartResponse = await _httpService.Send<bool>(requestDetails);
             return clearCartResponse;
+        }
+
+        public async Task<Result<bool>> Checkout(CheckoutView checkout)
+        {
+            var token = await _tokenAccessor.GetAccessToken();
+
+            var checkoutApi = _mapper.Map<CheckoutApi>(checkout);
+            var requestCheckout = RequestData.Create(checkoutApi, AppConstants.ShoppingCartApi, $"api/cart/checkout", HttpMethod.Post, token);
+
+            var checkoutResponse = await _httpService.Send<bool>(requestCheckout);
+            return checkoutResponse;
         }
 
         private async Task<CartView> GetCartView(CartApi cart)

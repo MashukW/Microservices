@@ -44,14 +44,14 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return userCartDto;
         }
 
-        public async Task<Result<CartApi>> AddItems(List<CartItemApi> cartItemsDto)
+        public async Task<Result<CartApi>> AddItems(List<CartItemApi> cartItemsApi)
         {
             var userCart = await GetUserCart();
             if (userCart == null)
             {
                 userCart = CreateNewUserCart();
 
-                var cartItems = await CreateCartItems(cartItemsDto);
+                var cartItems = await CreateCartItems(cartItemsApi);
                 userCart.CartItems = cartItems;
 
                 await _cartRepository.Add(userCart);
@@ -61,15 +61,15 @@ namespace Mango.Services.ShoppingCartAPI.Services
                 var existingCartItems = userCart.CartItems?.ToList();
                 if (existingCartItems == null || !existingCartItems.Any())
                 {
-                    var cartItems = await CreateCartItems(cartItemsDto);
+                    var cartItems = await CreateCartItems(cartItemsApi);
                     userCart.CartItems = cartItems;
                 }
                 else
                 {
-                    var existingCartItemsByProduct = GetExistingCartItemsByProduct(existingCartItems, cartItemsDto.Select(x => x.Product.PublicId).ToList());
-                    UpdateExistingCartItemsCount(existingCartItemsByProduct, cartItemsDto);
+                    var existingCartItemsByProduct = GetExistingCartItemsByProduct(existingCartItems, cartItemsApi.Select(x => x.Product.PublicId).ToList());
+                    UpdateExistingCartItemsCount(existingCartItemsByProduct, cartItemsApi);
 
-                    var nonExistingCartItemsByProduct = GetNonExistingCartItemsByProduct(cartItemsDto, existingCartItems.Select(x => x.Product.PublicId).ToList());
+                    var nonExistingCartItemsByProduct = GetNonExistingCartItemsByProduct(cartItemsApi, existingCartItems.Select(x => x.Product.PublicId).ToList());
                     if (nonExistingCartItemsByProduct != null && nonExistingCartItemsByProduct.Any())
                     {
                         var newCartItems = await CreateCartItems(nonExistingCartItemsByProduct);
@@ -88,7 +88,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return _mapper.Map<CartApi>(userCart);
         }
 
-        public async Task<Result<CartApi>> UpdateItems(List<CartItemApi> cartItemsDto)
+        public async Task<Result<CartApi>> UpdateItems(List<CartItemApi> cartItemsApi)
         {
             var userCart = await GetUserCart();
             if (userCart == null)
@@ -97,17 +97,17 @@ namespace Mango.Services.ShoppingCartAPI.Services
             var existingCartItems = userCart.CartItems?.ToList();
             if (existingCartItems == null || !existingCartItems.Any())
             {
-                var cartItems = await CreateCartItems(cartItemsDto);
+                var cartItems = await CreateCartItems(cartItemsApi);
                 userCart.CartItems = cartItems;
             }
             else
             {
-                foreach (var cartItemDto in cartItemsDto)
+                foreach (var cartItemDto in cartItemsApi)
                 {
                     var existingCartItem = existingCartItems.FirstOrDefault(x => x.PublicId == cartItemDto.PublicId);
                     if (existingCartItem != null)
                     {
-                        existingCartItem.Count = cartItemDto.Count;
+                        existingCartItem.Count = cartItemsApi.Count;
                     }
                 }
             }
@@ -166,6 +166,23 @@ namespace Mango.Services.ShoppingCartAPI.Services
             userCart.CouponCode = "";
             await _cartRepository.Update(userCart);
             await _workUnit.SaveChanges();
+
+            return true;
+        }
+
+        public async Task<Result<bool>> Checkout(CheckoutApi checkout)
+        {
+            var userCart = await Get();
+            if (userCart.Data == null || userCart.Data.PublicId == Guid.Empty)
+            {
+                return Result.NotFound("User cart not found");
+            }
+
+            var excessItems = userCart.Data.CartItems.Select(x => x.PublicId).Except(checkout.CartItems.Select(x => x.PublicId));
+            if (excessItems.Any())
+            {
+                return Result.ValidationError(new ValidationMessage { Field = nameof(checkout.CartItems), Message = "Incorrect items in the request" });
+            }
 
             return true;
         }

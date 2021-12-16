@@ -6,14 +6,21 @@ namespace Mango.Web.Models.View.Checkouts
     {
         public CheckoutView()
         {
-            Cart = new CartView();
+            CouponCode = string.Empty;
+            CartItems = new List<CartItemView>();
             UserDetails = new CheckoutUserDetailsView();
             PaymentCard = new CheckoutUserCardView();
         }
 
         public DateTime PickupDateTime { get; set; }
 
-        public CartView Cart { get; set; }
+        public string CouponCode { get; set; }
+
+        public List<CartItemView> CartItems { get; set; }
+
+        public double DiscountAmount { get; set; }
+
+        public double TotalCost {get;set; }
 
         public CheckoutUserDetailsView UserDetails { get; set; }
 

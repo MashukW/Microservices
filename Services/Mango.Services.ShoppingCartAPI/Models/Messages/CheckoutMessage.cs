@@ -24,6 +24,8 @@ namespace Mango.Services.ShoppingCartAPI.Models.Messages
 
         public List<CartItemApi> CartItems { get; set; }
 
+        public int TotalItems { get; set; }
+
         public string CouponCode { get; set; }
 
         public double DiscountAmount { get; set; }

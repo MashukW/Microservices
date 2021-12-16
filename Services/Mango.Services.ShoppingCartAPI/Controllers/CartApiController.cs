@@ -22,8 +22,8 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         {
             try
             {
-                var cartDto = await _cartService.Get();
-                return cartDto;
+                var cart = await _cartService.Get();
+                return cart;
             }
             catch (Exception ex)
             {
@@ -102,11 +102,11 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpPost("checkout")]
-        public async Task<ApiResult<bool>> Checkout()
+        public async Task<ApiResult<bool>> Checkout([FromBody] CheckoutApi model)
         {
             try
             {
-                var isSuccess = await _cartService.RemoveCoupon();
+                var isSuccess = await _cartService.Checkout(model);
                 return isSuccess;
             }
             catch (Exception ex)

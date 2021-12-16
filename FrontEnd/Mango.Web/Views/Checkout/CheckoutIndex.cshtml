@@ -1,13 +1,11 @@
 ﻿@model Mango.Web.Models.View.Checkouts.CheckoutView
 
-@if (Model?.Cart?.CartItems != null && Model?.Cart?.CartItems.Count > 0)
+@if (Model?.CartItems != null && Model?.CartItems.Count > 0)
 {
 	<form method="post">
-		<input asp-for="Cart.PublicId" hidden />
-		<input asp-for="Cart.UserPublicId" hidden />
-		<input asp-for="Cart.CouponCode" hidden />
-		<input asp-for="Cart.TotalCost" hidden />
-		<input asp-for="Cart.DiscountAmount" hidden />
+		<input asp-for="CouponCode" hidden />
+		<input asp-for="TotalCost" hidden />
+		<input asp-for="DiscountAmount" hidden />
 
 		<div>
 			<span style="font-size:25px;" class="text-warning">Enter details and place order :</span>
@@ -70,28 +68,34 @@
 							</div>
 							<hr />
 
-							@foreach (var cartItem in Model.Cart.CartItems)
+							@for (int i = 0; i < Model.CartItems.Count; i++)
 							{
 								<div class="row h-100">
 									<div class="col-6">
-										<span style="font-size:20px">@cartItem.Product.Name</span>
+										<span style="font-size:20px">@Model.CartItems[i].Product.Name</span>
 									</div>
 									<div class="col-3" style="font-size:11px;">
-										<span style="font-size:17px;">@cartItem.Product.Price</span>
-
+										<span style="font-size:17px;">@Model.CartItems[i].Product.Price</span>
 									</div>
 									<div class="col-3" style="font-size:11px;">
-										<span style="font-size:17px;">@cartItem.Count</span>
+										<span style="font-size:17px;">@Model.CartItems[i].Count</span>
+									</div>
+									<div>
+										@Html.HiddenFor(x => Model.CartItems[i].Count)
+										@Html.HiddenFor(x => Model.CartItems[i].PublicId)
+										@Html.HiddenFor(x => Model.CartItems[i].Product.PublicId)
+										@Html.HiddenFor(x => Model.CartItems[i].Product.Name)
+										@Html.HiddenFor(x => Model.CartItems[i].Product.Price)
 									</div>
 								</div>
 							}
 							<hr />
 							<div class="row">
 								<div class="col-12 text-right pr-4 text-danger">
-									Total Cost :  @string.Format("{0:c}", Model.Cart.TotalCost) <br />
-									@if (Model.Cart.DiscountAmount > 0)
+									Total Cost :  @string.Format("{0:c}", Model.TotalCost) <br />
+									@if (Model.DiscountAmount > 0)
 									{
-										<span class="text-success">Discount Amount: @string.Format("{0:c}", Model.Cart.DiscountAmount)</span>
+										<span class="text-success">Discount Amount: @string.Format("{0:c}", Model.DiscountAmount)</span>
 									}
 								</div>
 							</div>
@@ -114,10 +118,10 @@
 }
 
 @section Scripts {
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
-			$(".form_datetime").datetimepicker('setStartDate', new Date());
-		})
-	</script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+		$(".form_datetime").datetimepicker('setStartDate', new Date());
+	})
+</script>
 }
