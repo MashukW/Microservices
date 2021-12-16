@@ -2,13 +2,13 @@
 
 @if (Model?.Cart?.CartItems != null && Model?.Cart?.CartItems.Count > 0)
 {
-	<input asp-for="Cart.PublicId" hidden />
-	<input asp-for="Cart.UserPublicId" hidden />
-	<input asp-for="Cart.CouponCode" hidden />
-	<input asp-for="Cart.TotalCost" hidden />
-	<input asp-for="Cart.DiscountAmount" hidden />
-
 	<form method="post">
+		<input asp-for="Cart.PublicId" hidden />
+		<input asp-for="Cart.UserPublicId" hidden />
+		<input asp-for="Cart.CouponCode" hidden />
+		<input asp-for="Cart.TotalCost" hidden />
+		<input asp-for="Cart.DiscountAmount" hidden />
+
 		<div>
 			<span style="font-size:25px;" class="text-warning">Enter details and place order :</span>
 			<br />

@@ -26,5 +26,11 @@ namespace Mango.Web.Controllers
 
             return View(checkout);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckoutIndex(CheckoutView checkout)
+        {
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
     }
 }
