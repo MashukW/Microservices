@@ -52,6 +52,8 @@ namespace Mango.Services.ProductAPI.Services
 
         public async Task<Result<bool>> Remove(Guid productId)
         {
+            // Test from dev 2
+
             try
             {
                 var product = await _productRepository.Query(x => x.PublicId == productId).FirstOrDefaultAsync();
