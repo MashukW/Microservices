@@ -35,7 +35,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Api", "Shared\Shared
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.Services.CouponAPI", "Services\Mango.Services.CouponAPI\Mango.Services.CouponAPI.csproj", "{12432683-BF56-4C3D-B75C-7F0A04A47789}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Message", "Shared\Shared.Message\Shared.Message.csproj", "{55892B3D-F53F-411E-806A-B3C6ED459EAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Message", "Shared\Shared.Message\Shared.Message.csproj", "{55892B3D-F53F-411E-806A-B3C6ED459EAC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{EC76B9F8-DDA9-4F52-B718-CCF71ED144A9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProcessing", "Functions\ImageProcessing\ImageProcessing.csproj", "{13C62635-345D-4F97-B923-A13C90B79260}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProcessing.Services.Interfaces", "Functions\ImageProcessing.Services.Interfaces\ImageProcessing.Services.Interfaces.csproj", "{0EF20E7F-5AA9-4053-8FD1-B9F61538CD1D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProcessing.Services", "Functions\ImageProcessing.Services\ImageProcessing.Services.csproj", "{00CA74A8-1781-4A25-8394-010C0983917E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProcessing.Domain.Core", "Functions\ImageProcessing.Domain.Core\ImageProcessing.Domain.Core.csproj", "{F06486D2-EDA6-4E92-ACFE-6003123E4DB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +89,22 @@ Global
 		{55892B3D-F53F-411E-806A-B3C6ED459EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55892B3D-F53F-411E-806A-B3C6ED459EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55892B3D-F53F-411E-806A-B3C6ED459EAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13C62635-345D-4F97-B923-A13C90B79260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13C62635-345D-4F97-B923-A13C90B79260}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13C62635-345D-4F97-B923-A13C90B79260}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13C62635-345D-4F97-B923-A13C90B79260}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EF20E7F-5AA9-4053-8FD1-B9F61538CD1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EF20E7F-5AA9-4053-8FD1-B9F61538CD1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EF20E7F-5AA9-4053-8FD1-B9F61538CD1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EF20E7F-5AA9-4053-8FD1-B9F61538CD1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00CA74A8-1781-4A25-8394-010C0983917E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00CA74A8-1781-4A25-8394-010C0983917E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00CA74A8-1781-4A25-8394-010C0983917E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00CA74A8-1781-4A25-8394-010C0983917E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F06486D2-EDA6-4E92-ACFE-6003123E4DB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F06486D2-EDA6-4E92-ACFE-6003123E4DB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F06486D2-EDA6-4E92-ACFE-6003123E4DB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F06486D2-EDA6-4E92-ACFE-6003123E4DB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +120,10 @@ Global
 		{46BBCCCF-7605-409A-B758-CE37312C615B} = {6DC77EFF-F87E-4E24-AE9B-45BA236B04C5}
 		{12432683-BF56-4C3D-B75C-7F0A04A47789} = {F206C1D2-5E03-446F-9D64-5474AF3D67E7}
 		{55892B3D-F53F-411E-806A-B3C6ED459EAC} = {6DC77EFF-F87E-4E24-AE9B-45BA236B04C5}
+		{13C62635-345D-4F97-B923-A13C90B79260} = {EC76B9F8-DDA9-4F52-B718-CCF71ED144A9}
+		{0EF20E7F-5AA9-4053-8FD1-B9F61538CD1D} = {EC76B9F8-DDA9-4F52-B718-CCF71ED144A9}
+		{00CA74A8-1781-4A25-8394-010C0983917E} = {EC76B9F8-DDA9-4F52-B718-CCF71ED144A9}
+		{F06486D2-EDA6-4E92-ACFE-6003123E4DB2} = {EC76B9F8-DDA9-4F52-B718-CCF71ED144A9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {38EE14E2-F886-4B07-9B6D-52C1CDAB1227}
