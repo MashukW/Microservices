@@ -23,6 +23,12 @@ namespace Mango.Services.CouponAPI.Services
 
         public async Task<Result<CouponApi>> GetByCode(string couponCode)
         {
+            // This is code from branch test 1
+            // This is code from branch test 2
+            // This is code from branch test 3
+            // This is code from branch test 4
+            // This is code from branch test 5
+
             var coupon = await _couponRepository.Query().FirstOrDefaultAsync(x => x.Code == couponCode);
             return _mapper.Map<CouponApi>(coupon);
         }
