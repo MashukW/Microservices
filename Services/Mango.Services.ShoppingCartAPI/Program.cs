@@ -9,6 +9,9 @@ using Microsoft.OpenApi.Models;
 using Shared.Configurations;
 using Shared.Database;
 using Shared.Database.Repositories;
+using Shared.Message.Services;
+using Shared.Message.Services.Interfaces;
+using Shared.Options;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +25,10 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IUserAccessor, UserAccessor>();
 
+builder.Services.Configure<MessageBusOptions>(builder.Configuration.GetSection(nameof(MessageBusOptions)));
+
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IMessageBus, AzureMessageBus>();
 
 builder.Services.AddScoped<BaseDbContext, ApplicationDbContext>();
 

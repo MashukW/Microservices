@@ -33,7 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.Services.ShoppingCart
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Api", "Shared\Shared.Api\Shared.Api.csproj", "{46BBCCCF-7605-409A-B758-CE37312C615B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mango.Services.CouponAPI", "Services\Mango.Services.CouponAPI\Mango.Services.CouponAPI.csproj", "{12432683-BF56-4C3D-B75C-7F0A04A47789}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.Services.CouponAPI", "Services\Mango.Services.CouponAPI\Mango.Services.CouponAPI.csproj", "{12432683-BF56-4C3D-B75C-7F0A04A47789}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Message", "Shared\Shared.Message\Shared.Message.csproj", "{55892B3D-F53F-411E-806A-B3C6ED459EAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{12432683-BF56-4C3D-B75C-7F0A04A47789}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12432683-BF56-4C3D-B75C-7F0A04A47789}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12432683-BF56-4C3D-B75C-7F0A04A47789}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55892B3D-F53F-411E-806A-B3C6ED459EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55892B3D-F53F-411E-806A-B3C6ED459EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55892B3D-F53F-411E-806A-B3C6ED459EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55892B3D-F53F-411E-806A-B3C6ED459EAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{5D9BD2A1-6119-4350-8F0F-A9ABE564F36E} = {F206C1D2-5E03-446F-9D64-5474AF3D67E7}
 		{46BBCCCF-7605-409A-B758-CE37312C615B} = {6DC77EFF-F87E-4E24-AE9B-45BA236B04C5}
 		{12432683-BF56-4C3D-B75C-7F0A04A47789} = {F206C1D2-5E03-446F-9D64-5474AF3D67E7}
+		{55892B3D-F53F-411E-806A-B3C6ED459EAC} = {6DC77EFF-F87E-4E24-AE9B-45BA236B04C5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {38EE14E2-F886-4B07-9B6D-52C1CDAB1227}

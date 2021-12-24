@@ -4,6 +4,8 @@ using Mango.Services.ShoppingCartAPI.Database.Entities;
 using Mango.Services.ShoppingCartAPI.Models.Api;
 using Microsoft.EntityFrameworkCore;
 using Shared.Database.Repositories;
+using Shared.Message.Messages;
+using Shared.Message.Services.Interfaces;
 using Shared.Models.OperationResults;
 
 namespace Mango.Services.ShoppingCartAPI.Services
@@ -11,6 +13,8 @@ namespace Mango.Services.ShoppingCartAPI.Services
     public class CartService : ICartService
     {
         private readonly IUserAccessor _userAccessor;
+
+        private readonly IMessageBus _messageBus;
 
         private readonly IRepository<Cart> _cartRepository;
         private readonly IRepository<CartProduct> _cartProductRepository;
@@ -20,12 +24,15 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
         public CartService(
             IUserAccessor userAccessor,
+            IMessageBus messageBus,
             IRepository<Cart> cartRepository,
             IRepository<CartProduct> cartProductRepository,
             IWorkUnit workUnit,
             IMapper mapper)
         {
             _userAccessor = userAccessor;
+
+            _messageBus = messageBus;
 
             _cartRepository = cartRepository;
             _cartProductRepository = cartProductRepository;
@@ -183,6 +190,9 @@ namespace Mango.Services.ShoppingCartAPI.Services
             {
                 return Result.ValidationError(new ValidationMessage { Field = nameof(checkout.CartItems), Message = "Incorrect items in the request" });
             }
+
+            var checkoutMessage = _mapper.Map<CheckoutMessage>(checkout);
+            await _messageBus.Publish(checkoutMessage, "checkout");
 
             return true;
         }

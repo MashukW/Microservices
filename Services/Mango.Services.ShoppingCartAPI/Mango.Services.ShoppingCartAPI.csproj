@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Shared.Api\Shared.Api.csproj" />
     <ProjectReference Include="..\..\Shared\Shared.Database\Shared.Database.csproj" />
+    <ProjectReference Include="..\..\Shared\Shared.Message\Shared.Message.csproj" />
     <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
   </ItemGroup>
 

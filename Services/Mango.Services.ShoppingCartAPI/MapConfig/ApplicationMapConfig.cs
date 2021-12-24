@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Mango.Services.ShoppingCartAPI.Database.Entities;
 using Mango.Services.ShoppingCartAPI.Models.Api;
-using Mango.Services.ShoppingCartAPI.Models.Messages;
+using Shared.Message.Messages;
 
 namespace Mango.Services.ShoppingCartAPI.MapConfig
 {
