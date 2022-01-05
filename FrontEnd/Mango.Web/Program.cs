@@ -7,6 +7,8 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Remove this
+
 builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
