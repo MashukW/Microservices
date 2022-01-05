@@ -9,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Remove this
 
+
+// Remove this too
+
 builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
