@@ -4,6 +4,7 @@ using Mango.Services.ShoppingCartAPI.Database.Entities;
 using Mango.Services.ShoppingCartAPI.Models.Api;
 using Microsoft.EntityFrameworkCore;
 using Shared.Database.Repositories;
+using Shared.Exceptions;
 using Shared.Message.Messages;
 using Shared.Message.Services.Interfaces;
 using Shared.Models.OperationResults;
@@ -41,7 +42,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<Result<CartApi>> Get()
+        public async Task<CartApi> Get()
         {
             var userCart = await GetUserCart();
             if (userCart == null)
@@ -51,7 +52,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return userCartDto;
         }
 
-        public async Task<Result<CartApi>> AddItems(List<CartItemApi> cartItemsApi)
+        public async Task<CartApi> AddItems(List<CartItemApi> cartItemsApi)
         {
             var userCart = await GetUserCart();
             if (userCart == null)
@@ -95,11 +96,11 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return _mapper.Map<CartApi>(userCart);
         }
 
-        public async Task<Result<CartApi>> UpdateItems(List<CartItemApi> cartItemsApi)
+        public async Task<CartApi> UpdateItems(List<CartItemApi> cartItemsApi)
         {
             var userCart = await GetUserCart();
             if (userCart == null)
-                return Result.NotFound("User cart not found");
+                throw new NotFoundException("User cart not found");
 
             var existingCartItems = userCart.CartItems?.ToList();
             if (existingCartItems == null || !existingCartItems.Any())
@@ -124,11 +125,11 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return _mapper.Map<CartApi>(userCart);
         }
 
-        public async Task<Result<bool>> RemoveItems(List<Guid> cartItemsPublicIds)
+        public async Task<bool> RemoveItems(List<Guid> cartItemsPublicIds)
         {
             var userCart = await GetUserCart();
             if (userCart == null)
-                return Result.NotFound("User cart not found");
+                throw new NotFoundException("User cart not found");
 
             var cartItemsForRemoving = userCart.CartItems?
                 .Where(x => cartItemsPublicIds.Contains(x.PublicId))
@@ -151,11 +152,11 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return false;
         }
 
-        public async Task<Result<bool>> ApplyCoupon(string couponCode)
+        public async Task<bool> ApplyCoupon(string couponCode)
         {
             var userCart = await GetUserCart();
             if (userCart == null)
-                return false;
+                throw new NotFoundException("User cart not found");
 
             userCart.CouponCode = couponCode;
             await _cartRepository.Update(userCart);
@@ -164,11 +165,11 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return true;
         }
 
-        public async Task<Result<bool>> RemoveCoupon()
+        public async Task<bool> RemoveCoupon()
         {
             var userCart = await GetUserCart();
             if (userCart == null)
-                return false;
+                throw new NotFoundException("User cart not found");
 
             userCart.CouponCode = "";
             await _cartRepository.Update(userCart);
@@ -177,19 +178,15 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return true;
         }
 
-        public async Task<Result<bool>> Checkout(CheckoutApi checkout)
+        public async Task<bool> Checkout(CheckoutApi checkout)
         {
             var userCart = await Get();
-            if (userCart.Data == null || userCart.Data.PublicId == Guid.Empty)
-            {
-                return Result.NotFound("User cart not found");
-            }
+            if (userCart == null || userCart.PublicId == Guid.Empty)
+                throw new NotFoundException("User cart not found");
 
-            var excessItems = userCart.Data.CartItems.Select(x => x.PublicId).Except(checkout.CartItems.Select(x => x.PublicId));
+            var excessItems = userCart.CartItems.Select(x => x.PublicId).Except(checkout.CartItems.Select(x => x.PublicId));
             if (excessItems.Any())
-            {
-                return Result.ValidationError(new ValidationMessage { Field = nameof(checkout.CartItems), Message = "Incorrect items in the request" });
-            }
+                throw new ValidationErrorException(new ValidationMessage { Field = nameof(checkout.CartItems), Message = "Incorrect items in the request" });
 
             var checkoutMessage = _mapper.Map<CheckoutMessage>(checkout);
             await _messageBus.Publish(checkoutMessage, "checkout");
@@ -197,11 +194,11 @@ namespace Mango.Services.ShoppingCartAPI.Services
             return true;
         }
 
-        public async Task<Result<bool>> Clear()
+        public async Task<bool> Clear()
         {
             var userCart = await GetUserCart();
             if (userCart == null)
-                return Result.NotFound("User cart not found");
+                throw new NotFoundException("User cart not found");
 
             userCart.CartItems?.Clear();
             userCart.CouponCode = string.Empty;
