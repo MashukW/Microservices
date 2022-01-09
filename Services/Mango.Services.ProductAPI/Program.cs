@@ -5,6 +5,7 @@ using Mango.Services.ProductAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Shared.Api.Middlewares;
 using Shared.Configurations;
 using Shared.Database;
 using Shared.Database.Repositories;
@@ -88,6 +89,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

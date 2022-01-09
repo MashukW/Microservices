@@ -4,7 +4,7 @@ using Mango.Services.ProductAPI.Models.Api;
 using Mango.Services.ProductAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Shared.Database.Repositories;
-using Shared.Models.OperationResults;
+using Shared.Exceptions;
 
 namespace Mango.Services.ProductAPI.Services
 {
@@ -21,19 +21,19 @@ namespace Mango.Services.ProductAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<Result<List<ProductApi>>> Get()
+        public async Task<List<ProductApi>> Get()
         {
             List<Product> products = await _productRepository.Get();
             return _mapper.Map<List<ProductApi>>(products);
         }
 
-        public async Task<Result<ProductApi>> Get(Guid productId)
+        public async Task<ProductApi> Get(Guid productId)
         {
             var product = await _productRepository.Query(x => x.PublicId == productId).FirstOrDefaultAsync();
             return _mapper.Map<ProductApi>(product);
         }
 
-        public async Task<Result<ProductApi>> AddUpdate(ProductApi productDto)
+        public async Task<ProductApi> AddUpdate(ProductApi productDto)
         {
             var product = _mapper.Map<ProductApi, Product>(productDto);
             if (product.PublicId == Guid.Empty)
@@ -50,27 +50,16 @@ namespace Mango.Services.ProductAPI.Services
             return _mapper.Map<Product, ProductApi>(product);
         }
 
-        public async Task<Result<bool>> Remove(Guid productId)
+        public async Task<bool> Remove(Guid productId)
         {
-            // Test from dev 2
+            var product = await _productRepository.Query(x => x.PublicId == productId).FirstOrDefaultAsync();
+            if (product == null)
+                throw new NotFoundException($"Product '{product}' not found");
 
-            try
-            {
-                var product = await _productRepository.Query(x => x.PublicId == productId).FirstOrDefaultAsync();
-                if (product == null)
-                {
-                    return false;
-                }
+            await _productRepository.Remove(product);
+            await _workUnit.SaveChanges();
 
-                await _productRepository.Remove(product);
-                await _workUnit.SaveChanges();
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return true;
         }
     }
 }

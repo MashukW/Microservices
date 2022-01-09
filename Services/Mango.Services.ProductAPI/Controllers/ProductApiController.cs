@@ -2,9 +2,7 @@
 using Mango.Services.ProductAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Api;
 using Shared.Constants;
-using Shared.Models.OperationResults;
 
 namespace Mango.Services.ProductAPI.Controllers
 {
@@ -19,76 +17,41 @@ namespace Mango.Services.ProductAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ApiResult<List<ProductApi>>> Get()
+        public async Task<List<ProductApi>> Get()
         {
-            try
-            {
-                var products = await _productService.Get();
-                return products;
-            }
-            catch (Exception ex)
-            {
-                return Result.ServerError(ex.Message);
-            }
+            var products = await _productService.Get();
+            return products;
         }
 
         [HttpGet("{productId}")]
-        public async Task<ApiResult<ProductApi>> Get(Guid productId)
+        public async Task<ProductApi> Get(Guid productId)
         {
-            try
-            {
-                var product = await _productService.Get(productId);
-                return product;
-            }
-            catch (Exception ex)
-            {
-                return Result.ServerError(ex.Message);
-            }
+            var product = await _productService.Get(productId);
+            return product;
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<ApiResult<ProductApi>> Add([FromBody] ProductApi productDto)
+        public async Task<ProductApi> Add([FromBody] ProductApi productDto)
         {
-            try
-            {
-                var product = await _productService.AddUpdate(productDto);
-                return product;
-            }
-            catch (Exception ex)
-            {
-                return Result.ServerError(ex.Message);
-            }
+            var product = await _productService.AddUpdate(productDto);
+            return product;
         }
 
         [HttpPut]
         [Authorize]
-        public async Task<ApiResult<ProductApi>> Update([FromBody] ProductApi productDto)
+        public async Task<ProductApi> Update([FromBody] ProductApi productDto)
         {
-            try
-            {
-                var product = await _productService.AddUpdate(productDto);
-                return product;
-            }
-            catch (Exception ex)
-            {
-                return Result.ServerError(ex.Message);
-            }
+            var product = await _productService.AddUpdate(productDto);
+            return product;
         }
 
         [HttpDelete("{productId}")]
         [Authorize(Roles = RoleConstants.Admin)]
-        public async Task<ApiResult<bool>> Remove(Guid productId)
+        public async Task<bool> Remove(Guid productId)
         {
-            try
-            {
-                var isSuccess = await _productService.Remove(productId);
-                return isSuccess;
-            }
-            catch (Exception ex)
-            {
-                return Result.ServerError(ex.Message);
-            }
+            var isSuccess = await _productService.Remove(productId);
+            return isSuccess;
         }
     }
 }
