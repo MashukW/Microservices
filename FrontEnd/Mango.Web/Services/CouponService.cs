@@ -2,7 +2,7 @@
 using Mango.Web.Models.Api.Coupons;
 using Shared.Models.OperationResults;
 using Shared.Models.Requests;
-using Shared.Services;
+using Shared.Services.Interfaces;
 
 namespace Mango.Web.Services
 {

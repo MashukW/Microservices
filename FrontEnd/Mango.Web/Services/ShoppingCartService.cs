@@ -6,7 +6,7 @@ using Mango.Web.Models.View.Carts;
 using Mango.Web.Models.View.Checkouts;
 using Shared.Models.OperationResults;
 using Shared.Models.Requests;
-using Shared.Services;
+using Shared.Services.Interfaces;
 
 namespace Mango.Web.Services
 {

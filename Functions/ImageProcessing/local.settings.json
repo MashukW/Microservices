@@ -1,0 +1,11 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "ImageStorageConnection": "UseDevelopmentStorage=true",
+    "CosmosDbConnection": "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+    "ComputerVisionUrl": "https://vm-epam-af-computer-vision.cognitiveservices.azure.com/",
+    "ComputerVisionAccessKey": "af5069f35bd549bd9ea06b8ce948f12f",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+  }
+}

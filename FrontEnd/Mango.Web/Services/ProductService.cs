@@ -4,7 +4,7 @@ using Mango.Web.Models.Api.Products;
 using Mango.Web.Models.View.Products;
 using Shared.Models.OperationResults;
 using Shared.Models.Requests;
-using Shared.Services;
+using Shared.Services.Interfaces;
 
 namespace Mango.Web.Services
 {
@@ -12,7 +12,7 @@ namespace Mango.Web.Services
     {
         private readonly ITokenAccessor _tokenAccessor;
         private readonly IMapper _mapper;
-        private readonly IHttpService _httpService;        
+        private readonly IHttpService _httpService;
 
         public ProductService(IMapper mapper, ITokenAccessor tokenAccessor, IHttpService httpService)
         {

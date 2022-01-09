@@ -3,14 +3,10 @@ using Mango.Web.Accessors;
 using Mango.Web.Accessors.Interfaces;
 using Mango.Web.Services;
 using Shared.Services;
+using Shared.Services.Interfaces;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Remove this
-
-
-// Remove this too
 
 builder.Services.AddHttpClient();
 
