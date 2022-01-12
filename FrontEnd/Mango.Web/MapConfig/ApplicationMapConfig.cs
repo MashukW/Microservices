@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Mango.Web.Models.Api.Carts;
 using Mango.Web.Models.Api.Checkouts;
+using Mango.Web.Models.Api.Coupons;
 using Mango.Web.Models.Api.Products;
+using Mango.Web.Models.Service;
 using Mango.Web.Models.View.Carts;
 using Mango.Web.Models.View.Checkouts;
 using Mango.Web.Models.View.Products;
@@ -15,6 +17,7 @@ namespace Mango.Web.MapConfig
             MapCartMembers();
             MapProductMembers();
             MapCheckoutMembers();
+            MapCouponMembers();
         }
 
         private void MapProductMembers()
@@ -45,6 +48,11 @@ namespace Mango.Web.MapConfig
                 .ForMember(dest => dest.CardNumber, src => src.MapFrom(x => x.PaymentCard.CardNumber))
                 .ForMember(dest => dest.Cvv, src => src.MapFrom(x => x.PaymentCard.Cvv))
                 .ForMember(dest => dest.ExpityMonthYear, src => src.MapFrom(x => x.PaymentCard.ExpityMonthYear));
+        }
+
+        private void MapCouponMembers()
+        {
+            CreateMap<Coupon, CouponApi>().ReverseMap();
         }
     }
 }

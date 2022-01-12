@@ -20,7 +20,7 @@ AppConstants.CouponApi = builder.Configuration["ServiceUrls:CouponApi"];
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-builder.Services.AddScoped<IHttpService, HttpService>();
+builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<ICouponService, CouponService>();

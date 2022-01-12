@@ -18,14 +18,9 @@ namespace Mango.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            List<ProductView> productViews = new();
-            var getProductsResult = await _productService.Get();
-            if (getProductsResult != null && getProductsResult.IsSuccess && getProductsResult.Data != null)
-            {
-                productViews = getProductsResult.Data;
-            }
+            var productViews = await _productService.Get();
 
-            return View(productViews);
+            return View(productViews ?? new List<ProductView>());
         }
 
         [HttpGet]

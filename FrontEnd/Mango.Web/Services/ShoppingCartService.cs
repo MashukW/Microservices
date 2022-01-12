@@ -4,7 +4,6 @@ using Mango.Web.Models.Api.Carts;
 using Mango.Web.Models.Api.Checkouts;
 using Mango.Web.Models.View.Carts;
 using Mango.Web.Models.View.Checkouts;
-using Shared.Models.OperationResults;
 using Shared.Models.Requests;
 using Shared.Services.Interfaces;
 
@@ -16,13 +15,13 @@ namespace Mango.Web.Services
 
         private readonly IMapper _mapper;
 
-        private readonly IHttpService _httpService;
+        private readonly IApiService _httpService;
         private readonly ICouponService _couponService;
 
         public ShoppingCartService(
             ITokenAccessor tokenAccessor,
             IMapper mapper,
-            IHttpService httpService,
+            IApiService httpService,
             ICouponService couponService)
         {
             _tokenAccessor = tokenAccessor;
@@ -33,7 +32,7 @@ namespace Mango.Web.Services
             _couponService = couponService;
         }
 
-        public async Task<Result<CartView>> Get()
+        public async Task<CartView> Get()
         {
             var token = await _tokenAccessor.GetAccessToken();
             var requestDetails = RequestData.Create(AppConstants.ShoppingCartApi, $"api/cart", HttpMethod.Get, token);
@@ -48,7 +47,7 @@ namespace Mango.Web.Services
             return new CartView();
         }
 
-        public async Task<Result<CartView>> AddItems(List<CartItemView> cartItems)
+        public async Task<CartView> AddItems(List<CartItemView> cartItems)
         {
             var token = await _tokenAccessor.GetAccessToken();
 
@@ -65,7 +64,7 @@ namespace Mango.Web.Services
             return new CartView();
         }
 
-        public async Task<Result<CartView>> UpdateItems(List<CartItemView> cartItems)
+        public async Task<CartView> UpdateItems(List<CartItemView> cartItems)
         {
             var token = await _tokenAccessor.GetAccessToken();
             var cartItemsApi = _mapper.Map<List<CartItemApi>>(cartItems);
@@ -81,43 +80,55 @@ namespace Mango.Web.Services
             return new CartView();
         }
 
-        public async Task<Result<bool>> RemoveItems(List<Guid> cartItemPublicIds)
+        public async Task<bool> RemoveItems(List<Guid> cartItemPublicIds)
         {
             var token = await _tokenAccessor.GetAccessToken();
             var requestDetails = RequestData.Create(cartItemPublicIds, AppConstants.ShoppingCartApi, $"api/cart/remove-items", HttpMethod.Delete, token);
 
             var removeCartItemResponse = await _httpService.Send<bool>(requestDetails);
-            return removeCartItemResponse;
+            if (removeCartItemResponse.IsSuccess)
+                return removeCartItemResponse.Data;
+
+            return false;
         }
 
-        public async Task<Result<bool>> ApplyCoupon(string couponCode)
+        public async Task<bool> ApplyCoupon(string couponCode)
         {
             var token = await _tokenAccessor.GetAccessToken();
             var requestDetails = RequestData.Create(couponCode, AppConstants.ShoppingCartApi, $"api/cart/apply-coupon", HttpMethod.Post, token);
 
             var clearCartResponse = await _httpService.Send<bool>(requestDetails);
-            return clearCartResponse;
+            if (clearCartResponse.IsSuccess)
+                return clearCartResponse.Data;
+
+            return false;
         }
 
-        public async Task<Result<bool>> RemoveCoupon()
+        public async Task<bool> RemoveCoupon()
         {
             var token = await _tokenAccessor.GetAccessToken();
             var requestDetails = RequestData.Create(AppConstants.ShoppingCartApi, $"api/cart/remove-coupon", HttpMethod.Delete, token);
 
             var clearCartResponse = await _httpService.Send<bool>(requestDetails);
-            return clearCartResponse;
+            if (clearCartResponse.IsSuccess)
+                return clearCartResponse.Data;
+
+            return false;
         }
 
-        public async Task<Result<bool>> Clear()
+        public async Task<bool> Clear()
         {
             var token = await _tokenAccessor.GetAccessToken();
             var requestDetails = RequestData.Create(AppConstants.ShoppingCartApi, $"api/cart/clear", HttpMethod.Delete, token);
 
             var clearCartResponse = await _httpService.Send<bool>(requestDetails);
-            return clearCartResponse;
+            if (clearCartResponse.IsSuccess)
+                return clearCartResponse.Data;
+
+            return false;
         }
 
-        public async Task<Result<bool>> Checkout(CheckoutView checkout)
+        public async Task<bool> Checkout(CheckoutView checkout)
         {
             var token = await _tokenAccessor.GetAccessToken();
 
@@ -125,7 +136,10 @@ namespace Mango.Web.Services
             var requestCheckout = RequestData.Create(checkoutApi, AppConstants.ShoppingCartApi, $"api/cart/checkout", HttpMethod.Post, token);
 
             var checkoutResponse = await _httpService.Send<bool>(requestCheckout);
-            return checkoutResponse;
+            if (checkoutResponse.IsSuccess)
+                return checkoutResponse.Data;
+
+            return false;
         }
 
         private async Task<CartView> GetCartView(CartApi cart)
@@ -134,11 +148,8 @@ namespace Mango.Web.Services
 
             if (!string.IsNullOrWhiteSpace(cartView.CouponCode))
             {
-                var couponResponse = await _couponService.Get(cartView.CouponCode);
-                if (couponResponse.IsSuccess)
-                {
-                    cartView.DiscountAmount = couponResponse.Data?.DiscountAmount ?? 0;
-                }
+                var coupon = await _couponService.Get(cartView.CouponCode);
+                cartView.DiscountAmount = coupon?.DiscountAmount ?? 0;
             }
 
             return cartView;

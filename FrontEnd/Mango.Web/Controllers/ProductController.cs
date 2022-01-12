@@ -18,28 +18,17 @@ namespace Mango.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> ProductIndex()
         {
-            List<ProductView> productViews = new();
+            var productViews = await _productService.Get();
 
-            var getProductsResult = await _productService.Get();
-            if (getProductsResult != null && getProductsResult.IsSuccess && getProductsResult.Data != null)
-            {
-                productViews = getProductsResult.Data;
-            }
-
-            return View(productViews);
+            return View(productViews ?? new List<ProductView>());
         }
 
         [HttpGet]
         public async Task<IActionResult> ProductDetails(Guid productId)
         {
-            ProductView productView = new();
-            var getProductResult = await _productService.Get(productId);
-            if (getProductResult != null && getProductResult.IsSuccess && getProductResult.Data != null)
-            {
-                productView = getProductResult.Data;
-            }
+            var productView = await _productService.Get(productId);
 
-            return View(productView);
+            return View(productView ?? new ProductView());
         }
 
         [HttpGet]
@@ -55,7 +44,7 @@ namespace Mango.Web.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _productService.Add(productView);
-                if (response.IsSuccess)
+                if (response != null)
                 {
                     return RedirectToAction(nameof(ProductIndex));
                 }
@@ -67,10 +56,9 @@ namespace Mango.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> ProductEdit(Guid productId)
         {
-            var getProductResult = await _productService.Get(productId);
-            if (getProductResult != null && getProductResult.IsSuccess && getProductResult.Data != null)
+            var productView = await _productService.Get(productId);
+            if (productView != null)
             {
-                var productView = getProductResult.Data;
                 return View(productView);
             }
 
@@ -84,7 +72,7 @@ namespace Mango.Web.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _productService.Update(productView);
-                if (response.IsSuccess)
+                if (response != null)
                 {
                     return RedirectToAction(nameof(ProductIndex));
                 }
@@ -96,10 +84,9 @@ namespace Mango.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> ProductDelete(Guid productId)
         {
-            var getProductResult = await _productService.Get(productId);
-            if (getProductResult != null && getProductResult.IsSuccess && getProductResult.Data != null)
+            var productView = await _productService.Get(productId);
+            if (productView != null)
             {
-                var productView = getProductResult.Data;
                 return View(productView);
             }
 
@@ -113,7 +100,7 @@ namespace Mango.Web.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _productService.Remove(productView.PublicId);
-                if (response.IsSuccess)
+                if (response)
                 {
                     return RedirectToAction(nameof(ProductIndex));
                 }

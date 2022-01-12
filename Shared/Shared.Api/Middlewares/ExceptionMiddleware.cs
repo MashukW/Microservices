@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
-using Shared.Models.Exceptions;
+using Shared.Models.ApiResponses;
 using System.Net;
 
 namespace Shared.Api.Middlewares
@@ -25,101 +25,61 @@ namespace Shared.Api.Middlewares
             }
             catch (ValidationErrorException validationErrorException)
             {
-                await HandleExceptionAsync(context, validationErrorException);
+                await HandleExceptionAsync(context, new ApiResponse
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    ErrorMessage = validationErrorException.Message,
+                    ValidationMessages = validationErrorException.ValidationMessages
+                });
             }
             catch (NotFoundException notFoundException)
             {
-                await HandleExceptionAsync(context, notFoundException);
+                await HandleExceptionAsync(context, new ApiResponse
+                {
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    ErrorMessage = notFoundException.Message,
+                });
             }
             catch (UnauthorizedException unauthorizedException)
             {
-                await HandleExceptionAsync(context, unauthorizedException);
+                await HandleExceptionAsync(context, new ApiResponse
+                {
+                    StatusCode = (int)HttpStatusCode.Unauthorized,
+                    ErrorMessage = unauthorizedException.Message,
+                });
             }
             catch (ForbiddenException forbiddenException)
             {
-                await HandleExceptionAsync(context, forbiddenException);
+                await HandleExceptionAsync(context, new ApiResponse
+                {
+                    StatusCode = (int)HttpStatusCode.Forbidden,
+                    ErrorMessage = forbiddenException.Message,
+                });
             }
             catch (ErrorException errorException)
             {
-                await HandleExceptionAsync(context, errorException);
+                await HandleExceptionAsync(context, new ApiResponse
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    ErrorMessage = errorException.Message,
+                });
             }
             catch
             {
-                await HandleExceptionAsync(context);
+                await HandleExceptionAsync(context, new ApiResponse
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    ErrorMessage = "Internal Server Error",
+                });
             }
         }
 
-        private static async Task HandleExceptionAsync(HttpContext context, ValidationErrorException exception)
+        private static async Task HandleExceptionAsync(HttpContext context, ApiResponse response)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            context.Response.StatusCode = response.StatusCode;
 
-            await context.Response.WriteAsync(new ValidationExceptionDetails()
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = exception.Message,
-                ValidationMessages = exception.ValidationMessages
-            }.ToString());
-        }
-
-        private static async Task HandleExceptionAsync(HttpContext context, NotFoundException exception)
-        {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-
-            await context.Response.WriteAsync(new ExceptionDetails()
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = exception.Message
-            }.ToString());
-        }
-
-        private static async Task HandleExceptionAsync(HttpContext context, UnauthorizedException exception)
-        {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-
-            await context.Response.WriteAsync(new ExceptionDetails()
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = exception.Message
-            }.ToString());
-        }
-
-        private static async Task HandleExceptionAsync(HttpContext context, ForbiddenException exception)
-        {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-
-            await context.Response.WriteAsync(new ExceptionDetails()
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = exception.Message
-            }.ToString());
-        }
-
-        private static async Task HandleExceptionAsync(HttpContext context, ErrorException exception)
-        {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-            await context.Response.WriteAsync(new ExceptionDetails()
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = exception.Message
-            }.ToString());
-        }
-
-        private static async Task HandleExceptionAsync(HttpContext context)
-        {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-            await context.Response.WriteAsync(new ExceptionDetails()
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = "Internal Server Error"
-            }.ToString());
+            await context.Response.WriteAsync(response.ToString());
         }
     }
 }

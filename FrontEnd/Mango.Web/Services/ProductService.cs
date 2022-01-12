@@ -2,7 +2,6 @@
 using Mango.Web.Accessors.Interfaces;
 using Mango.Web.Models.Api.Products;
 using Mango.Web.Models.View.Products;
-using Shared.Models.OperationResults;
 using Shared.Models.Requests;
 using Shared.Services.Interfaces;
 
@@ -12,16 +11,16 @@ namespace Mango.Web.Services
     {
         private readonly ITokenAccessor _tokenAccessor;
         private readonly IMapper _mapper;
-        private readonly IHttpService _httpService;
+        private readonly IApiService _httpService;
 
-        public ProductService(IMapper mapper, ITokenAccessor tokenAccessor, IHttpService httpService)
+        public ProductService(IMapper mapper, ITokenAccessor tokenAccessor, IApiService httpService)
         {
             _mapper = mapper;
             _tokenAccessor = tokenAccessor;
             _httpService = httpService;
         }
 
-        public async Task<Result<List<ProductView>>> Get()
+        public async Task<List<ProductView>> Get()
         {
             var requestDetails = RequestData.Create(AppConstants.ProductApiBase, $"api/products/", HttpMethod.Get);
 
@@ -35,7 +34,7 @@ namespace Mango.Web.Services
             return new List<ProductView>();
         }
 
-        public async Task<Result<ProductView>> Get(Guid productId)
+        public async Task<ProductView> Get(Guid productId)
         {
             var token = await _tokenAccessor.GetAccessToken();
             var requestDetails = RequestData.Create(AppConstants.ProductApiBase, $"api/products/{productId}", HttpMethod.Get, token);
@@ -50,7 +49,7 @@ namespace Mango.Web.Services
             return new ProductView();
         }
 
-        public async Task<Result<ProductView>> Add(ProductView productDto)
+        public async Task<ProductView> Add(ProductView productDto)
         {
             var token = await _tokenAccessor.GetAccessToken();
             var requestDetails = RequestData.Create(productDto, AppConstants.ProductApiBase, $"api/products/", HttpMethod.Post, token);
@@ -65,7 +64,7 @@ namespace Mango.Web.Services
             return new ProductView();
         }
 
-        public async Task<Result<ProductView>> Update(ProductView productDto)
+        public async Task<ProductView> Update(ProductView productDto)
         {
             var token = await _tokenAccessor.GetAccessToken();
             var requestDetails = RequestData.Create(productDto, AppConstants.ProductApiBase, $"api/products/", HttpMethod.Put, token);
@@ -80,13 +79,13 @@ namespace Mango.Web.Services
             return new ProductView();
         }
 
-        public async Task<Result<bool>> Remove(Guid productId)
+        public async Task<bool> Remove(Guid productId)
         {
             var token = await _tokenAccessor.GetAccessToken();
             var requestDetails = RequestData.Create(AppConstants.ProductApiBase, $"api/products/{productId}", HttpMethod.Delete, token);
 
             var removeProductResponse = await _httpService.Send<bool>(requestDetails);
-            return removeProductResponse;
+            return removeProductResponse.Data;
         }
     }
 }

@@ -32,26 +32,16 @@ namespace Mango.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> CartIndex()
         {
-            CartView userCart = new();
-
-            var cartResult = await _shoppingCartService.Get();
-            if (cartResult.IsSuccess && cartResult.Data != null)
-            {
-                userCart = cartResult.Data;
-            }
-
+            var userCart = await _shoppingCartService.Get();
             return View(userCart);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddItems(Guid PublicId, int count)
         {
-            ProductView productView = new();
-            var getProductResult = await _productService.Get(PublicId);
-            if (getProductResult != null && getProductResult.IsSuccess && getProductResult.Data != null)
+            var productView = await _productService.Get(PublicId);
+            if (productView != null)
             {
-                productView = getProductResult.Data;
-
                 var cartItems = new List<CartItemView>
                 {
                     new CartItemView
@@ -61,11 +51,8 @@ namespace Mango.Web.Controllers
                     }
                 };
 
-                var addCartResponse = await _shoppingCartService.AddItems(cartItems);
-                if (addCartResponse.IsSuccess)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
+                await _shoppingCartService.AddItems(cartItems);
+                return RedirectToAction("Index", "Home");
             }
 
             return View($"~/Views/Product/ProductDetails.cshtml", productView ?? new ProductView());
@@ -75,10 +62,8 @@ namespace Mango.Web.Controllers
         public async Task<IActionResult> Remove(Guid cartItemPublicId)
         {
             var removeItemsResult = await _shoppingCartService.RemoveItems(new List<Guid> { cartItemPublicId });
-            if (removeItemsResult.IsSuccess && removeItemsResult.Data)
-            {
+            if (removeItemsResult)
                 return RedirectToAction(nameof(CartIndex));
-            }
 
             return View();
         }

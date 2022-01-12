@@ -1,4 +1,4 @@
-﻿using Shared.Models.OperationResults;
+﻿using Shared.Models;
 
 namespace Shared.Exceptions
 {

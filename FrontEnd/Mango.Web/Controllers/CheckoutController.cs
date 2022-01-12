@@ -18,13 +18,13 @@ namespace Mango.Web.Controllers
         {
             CheckoutView checkout = new();
 
-            var cartResult = await _shoppingCartService.Get();
-            if (cartResult.IsSuccess && cartResult.Data != null)
+            var cartView = await _shoppingCartService.Get();
+            if (cartView != null)
             {
-                checkout.CartItems = cartResult.Data.CartItems;
-                checkout.CouponCode = cartResult.Data.CouponCode;
-                checkout.TotalCost = cartResult.Data.TotalCost;
-                checkout.DiscountAmount = cartResult.Data.DiscountAmount;
+                checkout.CartItems = cartView.CartItems;
+                checkout.CouponCode = cartView.CouponCode;
+                checkout.TotalCost = cartView.TotalCost;
+                checkout.DiscountAmount = cartView.DiscountAmount;
             }
 
             return View(checkout);
@@ -36,7 +36,7 @@ namespace Mango.Web.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _shoppingCartService.Checkout(checkout);
-                if (response.IsSuccess)
+                if (response)
                 {
                     return RedirectToAction(nameof(Confirmation));
                 }

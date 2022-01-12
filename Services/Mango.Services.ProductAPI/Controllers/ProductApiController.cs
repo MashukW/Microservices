@@ -3,6 +3,7 @@ using Mango.Services.ProductAPI.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Constants;
+using Shared.Models.ApiResponses;
 
 namespace Mango.Services.ProductAPI.Controllers
 {
@@ -17,14 +18,14 @@ namespace Mango.Services.ProductAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<List<ProductApi>> Get()
+        public async Task<ApiResponse<List<ProductApi>>> Get()
         {
             var products = await _productService.Get();
             return products;
         }
 
         [HttpGet("{productId}")]
-        public async Task<ProductApi> Get(Guid productId)
+        public async Task<ApiResponse<ProductApi>> Get(Guid productId)
         {
             var product = await _productService.Get(productId);
             return product;
@@ -32,7 +33,7 @@ namespace Mango.Services.ProductAPI.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<ProductApi> Add([FromBody] ProductApi productDto)
+        public async Task<ApiResponse<ProductApi>> Add([FromBody] ProductApi productDto)
         {
             var product = await _productService.AddUpdate(productDto);
             return product;
@@ -40,7 +41,7 @@ namespace Mango.Services.ProductAPI.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<ProductApi> Update([FromBody] ProductApi productDto)
+        public async Task<ApiResponse<ProductApi>> Update([FromBody] ProductApi productDto)
         {
             var product = await _productService.AddUpdate(productDto);
             return product;
@@ -48,7 +49,7 @@ namespace Mango.Services.ProductAPI.Controllers
 
         [HttpDelete("{productId}")]
         [Authorize(Roles = RoleConstants.Admin)]
-        public async Task<bool> Remove(Guid productId)
+        public async Task<ApiResponse<bool>> Remove(Guid productId)
         {
             var isSuccess = await _productService.Remove(productId);
             return isSuccess;

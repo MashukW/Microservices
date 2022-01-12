@@ -1,6 +1,7 @@
 using Mango.Services.CouponAPI.Models.Api;
 using Mango.Services.CouponAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models.ApiResponses;
 
 namespace Mango.Services.CouponAPI.Controllers
 {
@@ -16,7 +17,7 @@ namespace Mango.Services.CouponAPI.Controllers
         }
 
         [HttpGet("{couponCode}")]
-        public async Task<CouponApi> Get(string couponCode)
+        public async Task<ApiResponse<CouponApi>> Get(string couponCode)
         {
             var coupon = await _couponService.GetByCode(couponCode);
             return coupon;

@@ -7,7 +7,7 @@ using Shared.Database.Repositories;
 using Shared.Exceptions;
 using Shared.Message.Messages;
 using Shared.Message.Services.Interfaces;
-using Shared.Models.OperationResults;
+using Shared.Models;
 
 namespace Mango.Services.ShoppingCartAPI.Services
 {
@@ -186,7 +186,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
             var excessItems = userCart.CartItems.Select(x => x.PublicId).Except(checkout.CartItems.Select(x => x.PublicId));
             if (excessItems.Any())
-                throw new ValidationErrorException(new ValidationMessage { Field = nameof(checkout.CartItems), Message = "Incorrect items in the request" });
+                throw new ValidationErrorException(new ValidationMessage { Field = nameof(checkout.CartItems), Messages = new List<string> { "Incorrect items in the request" } });
 
             var checkoutMessage = _mapper.Map<CheckoutMessage>(checkout);
             await _messageBus.Publish(checkoutMessage, "checkout");
