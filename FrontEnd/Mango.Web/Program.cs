@@ -6,6 +6,8 @@ using Shared.Services;
 using Shared.Services.Interfaces;
 using System.Reflection;
 
+// remove me
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
