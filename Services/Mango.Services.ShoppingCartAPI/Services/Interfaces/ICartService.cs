@@ -1,14 +1,16 @@
 ﻿using Mango.Services.ShoppingCartAPI.Models.Api;
+using Mango.Services.ShoppingCartAPI.Models.Incoming;
+using Mango.Services.ShoppingCartAPI.Models.Outgoing;
 
 namespace Mango.Services.ShoppingCartAPI.Services
 {
     public interface ICartService
     {
-        Task<CartApi> Get();
+        Task<CartOutgoing> Get();
 
-        Task<CartApi> AddItems(List<CartItemApi> cartItemsApi);
+        Task<CartOutgoing> AddItems(List<CartItemIncoming> cartItemsIncoming);
 
-        Task<CartApi> UpdateItems(List<CartItemApi> cartItemsApi);
+        Task<CartOutgoing> UpdateItems(List<CartItemIncoming> cartItemsIncoming);
 
         Task<bool> RemoveItems(List<Guid> cartItemsPublicIds);
 
@@ -16,7 +18,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
         Task<bool> RemoveCoupon();
 
-        Task<bool> Checkout(CheckoutApi checkout);
+        Task<bool> Checkout(CheckoutIncoming checkoutIncoming);
 
         Task<bool> Clear();
     }

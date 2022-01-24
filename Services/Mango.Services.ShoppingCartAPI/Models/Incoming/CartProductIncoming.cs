@@ -1,8 +1,8 @@
-﻿namespace Mango.Services.ShoppingCartAPI.Models.Api
+﻿namespace Mango.Services.ShoppingCartAPI.Models.Incoming
 {
-    public class CartProductApi
+    public class CartProductIncoming
     {
-        public CartProductApi()
+        public CartProductIncoming()
         {
             Name = string.Empty;
             Description = string.Empty;

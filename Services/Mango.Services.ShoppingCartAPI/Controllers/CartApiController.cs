@@ -1,4 +1,6 @@
 using Mango.Services.ShoppingCartAPI.Models.Api;
+using Mango.Services.ShoppingCartAPI.Models.Incoming;
+using Mango.Services.ShoppingCartAPI.Models.Outgoing;
 using Mango.Services.ShoppingCartAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models.ApiResponses;
@@ -17,30 +19,30 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ApiResponse<CartApi>> Get()
+        public async Task<ApiResponse<CartOutgoing>> Get()
         {
             var cart = await _cartService.Get();
             return cart;
         }
 
         [HttpPost("add-items")]
-        public async Task<ApiResponse<CartApi>> AddItems([FromBody] List<CartItemApi> cartItemsDto)
+        public async Task<ApiResponse<CartOutgoing>> AddItems([FromBody] List<CartItemIncoming> cartItemsIncoming)
         {
-            var userCart = await _cartService.AddItems(cartItemsDto);
+            var userCart = await _cartService.AddItems(cartItemsIncoming);
             return userCart;
         }
 
         [HttpPut("update-items")]
-        public async Task<ApiResponse<CartApi>> UpdateItems([FromBody] List<CartItemApi> cartItemsDto)
+        public async Task<ApiResponse<CartOutgoing>> UpdateItems([FromBody] List<CartItemIncoming> cartItemsIncoming)
         {
-            var userCart = await _cartService.UpdateItems(cartItemsDto);
+            var userCart = await _cartService.UpdateItems(cartItemsIncoming);
             return userCart;
         }
 
         [HttpDelete("remove-items")]
-        public async Task<ApiResponse<bool>> RemoveItems([FromBody] List<Guid> cartItemsPublicIds)
+        public async Task<ApiResponse<bool>> RemoveItems([FromBody] List<Guid> cartItemPublicIds)
         {
-            var isSuccess = await _cartService.RemoveItems(cartItemsPublicIds);
+            var isSuccess = await _cartService.RemoveItems(cartItemPublicIds);
             return isSuccess;
         }
 
@@ -59,9 +61,9 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpPost("checkout")]
-        public async Task<ApiResponse<bool>> Checkout([FromBody] CheckoutApi model)
+        public async Task<ApiResponse<bool>> Checkout([FromBody] CheckoutIncoming checkoutIncoming)
         {
-            var isSuccess = await _cartService.Checkout(model);
+            var isSuccess = await _cartService.Checkout(checkoutIncoming);
             return isSuccess;
         }
 

@@ -1,4 +1,6 @@
-﻿namespace Shared.Message.Messages
+﻿using Shared.Message.Messages;
+
+namespace Mango.Services.ShoppingCartAPI.Models.Messages
 {
     public class CheckoutMessage : BaseMessage
     {
@@ -44,5 +46,42 @@
         public string Cvv { get; set; }
 
         public string ExpityMonthYear { get; set; }
+    }
+
+    public class CartProductMessage
+    {
+        public CartProductMessage()
+        {
+            Name = string.Empty;
+            Description = string.Empty;
+            CategoryName = string.Empty;
+            ImageUrl = string.Empty;
+        }
+
+        public Guid PublicId { get; set; }
+
+        public string Name { get; set; }
+
+        public double Price { get; set; }
+
+        public string Description { get; set; }
+
+        public string CategoryName { get; set; }
+
+        public string ImageUrl { get; set; }
+    }
+
+    public class CartItemMessage
+    {
+        public CartItemMessage()
+        {
+            Product = new CartProductMessage();
+        }
+
+        public Guid PublicId { get; set; }
+
+        public int Count { get; set; }
+
+        public CartProductMessage Product { get; set; }
     }
 }

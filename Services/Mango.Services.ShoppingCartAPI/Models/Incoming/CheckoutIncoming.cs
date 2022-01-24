@@ -2,9 +2,9 @@
 
 namespace Mango.Services.ShoppingCartAPI.Models.Api
 {
-    public class CheckoutApi
+    public class CheckoutIncoming
     {
-        public CheckoutApi()
+        public CheckoutIncoming()
         {
             CouponCode = string.Empty;
             CartItems = new List<CartItemOutgoing>();

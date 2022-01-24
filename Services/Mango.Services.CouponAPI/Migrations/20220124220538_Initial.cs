@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Mango.Services.CouponAPI.Migrations
 {
-    public partial class InitialCoupon : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -29,11 +29,11 @@ namespace Mango.Services.CouponAPI.Migrations
                 columns: new[] { "Id", "Code", "DiscountAmount", "PublicId" },
                 values: new object[,]
                 {
-                    { 1, "10OFF", 10.0, new Guid("d40064cf-2d4b-4afb-9883-c0f75841f54c") },
-                    { 2, "20OFF", 20.0, new Guid("34efd893-9480-4e49-94f3-42a6a422342d") },
-                    { 3, "30OFF", 30.0, new Guid("74caf3f9-a81a-493b-b158-621f1d580214") },
-                    { 4, "40OFF", 40.0, new Guid("75869737-dd15-4910-853f-7b1b7c31398f") },
-                    { 5, "50OFF", 50.0, new Guid("18b3e267-6868-4f7a-b1c6-e420255b8d12") }
+                    { 1, "10OFF", 10.0, new Guid("770a4868-d099-4b62-ab22-ff62ab4929c7") },
+                    { 2, "20OFF", 20.0, new Guid("20315dc3-9772-4343-afb5-646d21ad7c78") },
+                    { 3, "30OFF", 30.0, new Guid("1783df47-55b6-44b9-8f84-a4e64318308c") },
+                    { 4, "40OFF", 40.0, new Guid("e70dd92d-8c28-4a1c-aeda-a3071d0df91d") },
+                    { 5, "50OFF", 50.0, new Guid("92c9e9ec-99c8-453e-9435-303e33b98001") }
                 });
         }
 

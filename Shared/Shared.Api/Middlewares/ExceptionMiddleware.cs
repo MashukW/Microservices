@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Shared.Configurations;
 using Shared.Exceptions;
 using Shared.Models.ApiResponses;
 using System.Net;
+using System.Text.Json;
 
 namespace Shared.Api.Middlewares
 {
@@ -79,7 +81,9 @@ namespace Shared.Api.Middlewares
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = response.StatusCode;
 
-            await context.Response.WriteAsync(response.ToString());
+            var responseJson = JsonSerializer.Serialize(response, JsonOptionsConfiguration.Options);
+
+            await context.Response.WriteAsync(responseJson);
         }
     }
 }

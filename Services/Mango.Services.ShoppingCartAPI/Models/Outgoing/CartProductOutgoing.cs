@@ -1,8 +1,8 @@
-﻿namespace Shared.Message.Messages
+﻿namespace Mango.Services.ShoppingCartAPI.Models.Outgoing
 {
-    public class CartProductMessage
+    public class CartProductOutgoing
     {
-        public CartProductMessage()
+        public CartProductOutgoing()
         {
             Name = string.Empty;
             Description = string.Empty;
