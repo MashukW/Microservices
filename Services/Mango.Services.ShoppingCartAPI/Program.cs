@@ -1,3 +1,4 @@
+using AutoMapper;
 using Mango.Services.ShoppingCartAPI.Accessors;
 using Mango.Services.ShoppingCartAPI.Accessors.Interfaces;
 using Mango.Services.ShoppingCartAPI.Database;
@@ -106,6 +107,12 @@ app.UseMiddleware<ExceptionMiddleware>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    using (var serviceScope = app.Services.CreateScope())
+    {
+        var mapper = serviceScope.ServiceProvider.GetRequiredService<IMapper>();
+        mapper.ConfigurationProvider.AssertConfigurationIsValid();
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }

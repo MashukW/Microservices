@@ -1,13 +1,11 @@
-﻿using Mango.Services.ShoppingCartAPI.Models.Outgoing;
-
-namespace Mango.Services.ShoppingCartAPI.Models.Api
+﻿namespace Mango.Services.ShoppingCartAPI.Models.Incoming
 {
     public class CheckoutIncoming
     {
         public CheckoutIncoming()
         {
             CouponCode = string.Empty;
-            CartItems = new List<CartItemOutgoing>();
+            CartItems = new List<CartItemIncoming>();
 
             FirstName = string.Empty;
             LastName = string.Empty;
@@ -22,7 +20,7 @@ namespace Mango.Services.ShoppingCartAPI.Models.Api
         public DateTime PickupDateTime { get; set; }
 
 
-        public List<CartItemOutgoing> CartItems { get; set; }
+        public List<CartItemIncoming> CartItems { get; set; }
 
         public string CouponCode { get; set; }
 

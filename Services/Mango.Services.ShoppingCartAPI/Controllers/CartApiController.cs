@@ -1,12 +1,13 @@
-using Mango.Services.ShoppingCartAPI.Models.Api;
 using Mango.Services.ShoppingCartAPI.Models.Incoming;
 using Mango.Services.ShoppingCartAPI.Models.Outgoing;
 using Mango.Services.ShoppingCartAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models.ApiResponses;
 
 namespace Mango.Services.ShoppingCartAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/cart")]
     public class CartApiController : ControllerBase
