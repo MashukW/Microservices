@@ -3,9 +3,9 @@ using System.Text.Json;
 
 namespace Shared.Models.Requests
 {
-    public class RequestData
+    public class ApiRequest
     {
-        protected RequestData()
+        protected ApiRequest()
         {
             BaseUrl = string.Empty;
             Path = string.Empty;
@@ -27,7 +27,7 @@ namespace Shared.Models.Requests
 
         public string AuthenticationScheme { get; protected set; }
 
-        public static RequestData Create<T>(
+        public static ApiRequest Create<T>(
             T content,
             string baseUrl,
             string path,
@@ -35,7 +35,7 @@ namespace Shared.Models.Requests
             string accessToken = "",
             string authenticationScheme = "Bearer")
         {
-            var requestData = new RequestData
+            var requestData = new ApiRequest
             {
                 BaseUrl = baseUrl,
                 Path = path,
@@ -56,14 +56,14 @@ namespace Shared.Models.Requests
             return requestData;
         }
 
-        public static RequestData Create(
+        public static ApiRequest Create(
             string baseUrl,
             string path,
             HttpMethod httpMethod,
             string accessToken = "",
             string authenticationScheme = "Bearer")
         {
-            var requestData = new RequestData
+            var requestData = new ApiRequest
             {
                 BaseUrl = baseUrl,
                 Path = path,

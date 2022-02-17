@@ -3,6 +3,11 @@
     public class Entity : IEntity
     {
         public int Id { get; set; }
+
+        public bool IsInitial()
+        {
+            return Id == default;
+        }
     }
 
     public class DateCreatedEntity : Entity, IDateCreated

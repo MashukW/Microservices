@@ -7,11 +7,9 @@ namespace Mango.Web.Services
     {
         Task<CartView> Get();
 
-        Task<CartView> AddItems(List<CartItemView> cartItems);
+        Task<CartView> AddItem(CartItemView cartItem);
 
-        Task<CartView> UpdateItems(List<CartItemView> cartItems);
-
-        Task<bool> RemoveItems(List<Guid> cartItemPublicIds);
+        Task<bool> RemoveItem(Guid cartItemPublicIds);
 
         Task<bool> ApplyCoupon(string couponCode);
 

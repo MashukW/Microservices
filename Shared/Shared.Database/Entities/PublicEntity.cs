@@ -5,6 +5,11 @@
         public int Id { get; set; }
 
         public Guid PublicId { get; set; }
+
+        public bool IsInitial()
+        {
+            return PublicId == default || Id == default;
+        }
     }
 
     public class DateCreatedPublicEntity : PublicEntity, IDateCreated

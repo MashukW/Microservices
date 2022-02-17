@@ -19,5 +19,10 @@
         public string LastName { get; set; }
 
         public string[] Roles { get; set; }
+
+        public bool IsValid()
+        {
+            return Id != Guid.Empty;
+        }
     }
 }

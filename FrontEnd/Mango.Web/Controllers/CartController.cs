@@ -42,16 +42,13 @@ namespace Mango.Web.Controllers
             var productView = await _productService.Get(PublicId);
             if (productView != null)
             {
-                var cartItems = new List<CartItemView>
+                var cartItemView = new CartItemView
                 {
-                    new CartItemView
-                    {
-                        Count = count,
-                        Product = _mapper.Map<CartProductView>(productView)
-                    }
+                    Count = count,
+                    Product = _mapper.Map<CartProductView>(productView)
                 };
 
-                await _shoppingCartService.AddItems(cartItems);
+                await _shoppingCartService.AddItem(cartItemView);
                 return RedirectToAction("Index", "Home");
             }
 
@@ -61,7 +58,7 @@ namespace Mango.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Remove(Guid cartItemPublicId)
         {
-            var removeItemsResult = await _shoppingCartService.RemoveItems(new List<Guid> { cartItemPublicId });
+            var removeItemsResult = await _shoppingCartService.RemoveItem(cartItemPublicId);
             if (removeItemsResult)
                 return RedirectToAction(nameof(CartIndex));
 

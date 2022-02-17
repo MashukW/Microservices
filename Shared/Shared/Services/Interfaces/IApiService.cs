@@ -5,6 +5,6 @@ namespace Shared.Services.Interfaces
 {
     public interface IApiService
     {
-        Task<ApiResponse<T>> Send<T>(RequestData requestData);
+        Task<ApiResponse<T>> Send<T>(ApiRequest requestData);
     }
 }

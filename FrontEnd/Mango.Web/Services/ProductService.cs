@@ -22,7 +22,7 @@ namespace Mango.Web.Services
 
         public async Task<List<ProductView>> Get()
         {
-            var requestDetails = RequestData.Create(AppConstants.ProductApiBase, $"api/products/", HttpMethod.Get);
+            var requestDetails = ApiRequest.Create(AppConstants.ProductApiBase, $"api/products/", HttpMethod.Get);
 
             var getProductsResult = await _httpService.Send<List<ProductApi>>(requestDetails);
             if (getProductsResult != null && getProductsResult.IsSuccess && getProductsResult.Data != null)
@@ -37,7 +37,7 @@ namespace Mango.Web.Services
         public async Task<ProductView> Get(Guid productId)
         {
             var token = await _tokenAccessor.GetAccessToken();
-            var requestDetails = RequestData.Create(AppConstants.ProductApiBase, $"api/products/{productId}", HttpMethod.Get, token);
+            var requestDetails = ApiRequest.Create(AppConstants.ProductApiBase, $"api/products/{productId}", HttpMethod.Get, token);
 
             var getProductResult = await _httpService.Send<ProductApi>(requestDetails);
             if (getProductResult != null && getProductResult.IsSuccess && getProductResult.Data != null)
@@ -52,7 +52,7 @@ namespace Mango.Web.Services
         public async Task<ProductView> Add(ProductView productDto)
         {
             var token = await _tokenAccessor.GetAccessToken();
-            var requestDetails = RequestData.Create(productDto, AppConstants.ProductApiBase, $"api/products/", HttpMethod.Post, token);
+            var requestDetails = ApiRequest.Create(productDto, AppConstants.ProductApiBase, $"api/products/", HttpMethod.Post, token);
 
             var addProductResult = await _httpService.Send<ProductApi>(requestDetails);
             if (addProductResult != null && addProductResult.IsSuccess && addProductResult.Data != null)
@@ -67,7 +67,7 @@ namespace Mango.Web.Services
         public async Task<ProductView> Update(ProductView productDto)
         {
             var token = await _tokenAccessor.GetAccessToken();
-            var requestDetails = RequestData.Create(productDto, AppConstants.ProductApiBase, $"api/products/", HttpMethod.Put, token);
+            var requestDetails = ApiRequest.Create(productDto, AppConstants.ProductApiBase, $"api/products/", HttpMethod.Put, token);
 
             var updateProductResult = await _httpService.Send<ProductApi>(requestDetails);
             if (updateProductResult != null && updateProductResult.IsSuccess && updateProductResult.Data != null)
@@ -82,7 +82,7 @@ namespace Mango.Web.Services
         public async Task<bool> Remove(Guid productId)
         {
             var token = await _tokenAccessor.GetAccessToken();
-            var requestDetails = RequestData.Create(AppConstants.ProductApiBase, $"api/products/{productId}", HttpMethod.Delete, token);
+            var requestDetails = ApiRequest.Create(AppConstants.ProductApiBase, $"api/products/{productId}", HttpMethod.Delete, token);
 
             var removeProductResponse = await _httpService.Send<bool>(requestDetails);
             return removeProductResponse.Data;

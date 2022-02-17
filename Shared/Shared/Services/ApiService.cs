@@ -21,7 +21,7 @@ namespace Shared.Services
             _logger = logger;
         }
 
-        public async Task<ApiResponse<T>> Send<T>(RequestData requestData)
+        public async Task<ApiResponse<T>> Send<T>(ApiRequest requestData)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace Shared.Services
             }
         }
 
-        private async Task<HttpResponseMessage> BaseSend(RequestData request)
+        private async Task<HttpResponseMessage> BaseSend(ApiRequest request)
         {
             var requestUri = new Uri($"{request.BaseUrl}{request.Path}");
             var message = new HttpRequestMessage(request.HttpMethod, requestUri);

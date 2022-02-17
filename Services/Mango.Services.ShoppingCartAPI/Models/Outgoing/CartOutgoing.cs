@@ -1,6 +1,4 @@
-﻿using Mango.Services.ShoppingCartAPI.Models.Api;
-
-namespace Mango.Services.ShoppingCartAPI.Models.Outgoing
+﻿namespace Mango.Services.ShoppingCartAPI.Models.Outgoing
 {
     public class CartOutgoing
     {

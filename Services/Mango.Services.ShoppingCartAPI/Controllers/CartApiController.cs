@@ -26,24 +26,17 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             return cart;
         }
 
-        [HttpPost("add-items")]
-        public async Task<ApiResponse<CartOutgoing>> AddItems([FromBody] List<CartItemIncoming> cartItemsIncoming)
+        [HttpPost("add-item")]
+        public async Task<ApiResponse<CartOutgoing>> AddItems([FromBody] CartItemIncoming cartItemIncoming)
         {
-            var userCart = await _cartService.AddItems(cartItemsIncoming);
+            var userCart = await _cartService.AddItem(cartItemIncoming);
             return userCart;
         }
 
-        [HttpPut("update-items")]
-        public async Task<ApiResponse<CartOutgoing>> UpdateItems([FromBody] List<CartItemIncoming> cartItemsIncoming)
+        [HttpDelete("remove-item")]
+        public async Task<ApiResponse<bool>> RemoveItems([FromBody] Guid cartItemPublicId)
         {
-            var userCart = await _cartService.UpdateItems(cartItemsIncoming);
-            return userCart;
-        }
-
-        [HttpDelete("remove-items")]
-        public async Task<ApiResponse<bool>> RemoveItems([FromBody] List<Guid> cartItemPublicIds)
-        {
-            var isSuccess = await _cartService.RemoveItems(cartItemPublicIds);
+            var isSuccess = await _cartService.RemoveItem(cartItemPublicId);
             return isSuccess;
         }
 

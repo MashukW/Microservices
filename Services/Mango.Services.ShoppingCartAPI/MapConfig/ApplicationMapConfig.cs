@@ -24,6 +24,13 @@ namespace Mango.Services.ShoppingCartAPI.MapConfig
             CreateMap<CartItemIncoming, CartItemMessage>();
             CreateMap<CartProductIncoming, CartProductMessage>();
 
+            CreateMap<CartItemIncoming, CartItem>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.ProductId, opt => opt.Ignore())
+                .ForMember(dest => dest.CartId, opt => opt.Ignore())
+                .ForMember(dest => dest.Cart, opt => opt.Ignore())
+                .ForMember(dest => dest.DateCreated, opt => opt.Ignore())
+                .ForMember(dest => dest.DateUpdated, opt => opt.Ignore());
             CreateMap<CartProductIncoming, CartProduct>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CartItems, opt => opt.Ignore());

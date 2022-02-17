@@ -4,6 +4,7 @@ using Mango.Services.ShoppingCartAPI.Accessors.Interfaces;
 using Mango.Services.ShoppingCartAPI.Database;
 using Mango.Services.ShoppingCartAPI.Database.Entities;
 using Mango.Services.ShoppingCartAPI.Services;
+using Mango.Services.ShoppingCartAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -29,6 +30,7 @@ builder.Services.AddSingleton<IUserAccessor, UserAccessor>();
 
 builder.Services.Configure<MessageBusOptions>(builder.Configuration.GetSection(nameof(MessageBusOptions)));
 
+builder.Services.AddScoped<ICartProductService, CartProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IMessageBus, AzureMessageBus>();
 
