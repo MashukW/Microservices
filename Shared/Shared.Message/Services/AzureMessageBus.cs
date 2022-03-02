@@ -32,5 +32,21 @@ namespace Shared.Message.Services
             await sender.SendMessageAsync(messagesToSend);
             await sender.DisposeAsync();
         }
+
+        public async Task Receive<T>(T message, string topicName) where T : BaseMessage
+        {
+            var messageJson = JsonSerializer.Serialize(message, JsonOptionsConfiguration.Options);
+
+            await using var client = new ServiceBusClient(_messageBusOptions.ConnectionString);
+            var sender = client.CreateSender(topicName);
+
+            var messagesToSend = new ServiceBusMessage(messageJson)
+            {
+                CorrelationId = Guid.NewGuid().ToString("D")
+            };
+
+            await sender.SendMessageAsync(messagesToSend);
+            await sender.DisposeAsync();
+        }
     }
 }

@@ -47,6 +47,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProcessing.Services", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProcessing.Domain.Core", "Functions\ImageProcessing.Domain.Core\ImageProcessing.Domain.Core.csproj", "{F06486D2-EDA6-4E92-ACFE-6003123E4DB2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mango.Services.OrderAPI", "Services\Mango.Services.OrderAPI\Mango.Services.OrderAPI.csproj", "{FE4D8499-0762-42F1-AF58-D5459ADC412B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{F06486D2-EDA6-4E92-ACFE-6003123E4DB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F06486D2-EDA6-4E92-ACFE-6003123E4DB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F06486D2-EDA6-4E92-ACFE-6003123E4DB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE4D8499-0762-42F1-AF58-D5459ADC412B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE4D8499-0762-42F1-AF58-D5459ADC412B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE4D8499-0762-42F1-AF58-D5459ADC412B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE4D8499-0762-42F1-AF58-D5459ADC412B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,6 +130,7 @@ Global
 		{0EF20E7F-5AA9-4053-8FD1-B9F61538CD1D} = {EC76B9F8-DDA9-4F52-B718-CCF71ED144A9}
 		{00CA74A8-1781-4A25-8394-010C0983917E} = {EC76B9F8-DDA9-4F52-B718-CCF71ED144A9}
 		{F06486D2-EDA6-4E92-ACFE-6003123E4DB2} = {EC76B9F8-DDA9-4F52-B718-CCF71ED144A9}
+		{FE4D8499-0762-42F1-AF58-D5459ADC412B} = {F206C1D2-5E03-446F-9D64-5474AF3D67E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {38EE14E2-F886-4B07-9B6D-52C1CDAB1227}

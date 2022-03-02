@@ -5,5 +5,7 @@ namespace Shared.Message.Services.Interfaces
     public interface IMessageBus
     {
         Task Publish<T>(T message, string topicName) where T : BaseMessage;
+
+        Task Receive<T>(T message, string topicName) where T : BaseMessage;
     }
 }
