@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mango.Services.OrderAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220302225108_Initial")]
+    [Migration("20220304085640_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,7 +69,7 @@ namespace Mango.Services.OrderAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("OrderDataTime")
+                    b.Property<DateTime>("OrderDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("PaymentStatus")

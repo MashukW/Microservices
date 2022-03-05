@@ -8,32 +8,16 @@ using System.Text.Json;
 
 namespace Shared.Message.Services
 {
-    public class AzureMessageBus : IMessageBus
+    public class AzureMessagePublisher : IMessagePublisher
     {
         private readonly MessageBusOptions _messageBusOptions;
 
-        public AzureMessageBus(IOptions<MessageBusOptions> messageBusOptions)
+        public AzureMessagePublisher(IOptions<MessageBusOptions> messageBusOptions)
         {
             _messageBusOptions = messageBusOptions.Value;
         }
 
         public async Task Publish<T>(T message, string topicName) where T : BaseMessage
-        {
-            var messageJson = JsonSerializer.Serialize(message, JsonOptionsConfiguration.Options);
-
-            await using var client = new ServiceBusClient(_messageBusOptions.ConnectionString);
-            var sender = client.CreateSender(topicName);
-
-            var messagesToSend = new ServiceBusMessage(messageJson)
-            {
-                CorrelationId = Guid.NewGuid().ToString("D")
-            };
-
-            await sender.SendMessageAsync(messagesToSend);
-            await sender.DisposeAsync();
-        }
-
-        public async Task Receive<T>(T message, string topicName) where T : BaseMessage
         {
             var messageJson = JsonSerializer.Serialize(message, JsonOptionsConfiguration.Options);
 

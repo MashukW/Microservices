@@ -47,7 +47,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProcessing.Services", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProcessing.Domain.Core", "Functions\ImageProcessing.Domain.Core\ImageProcessing.Domain.Core.csproj", "{F06486D2-EDA6-4E92-ACFE-6003123E4DB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mango.Services.OrderAPI", "Services\Mango.Services.OrderAPI\Mango.Services.OrderAPI.csproj", "{FE4D8499-0762-42F1-AF58-D5459ADC412B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.Services.OrderAPI", "Services\Mango.Services.OrderAPI\Mango.Services.OrderAPI.csproj", "{FE4D8499-0762-42F1-AF58-D5459ADC412B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

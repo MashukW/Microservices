@@ -2,12 +2,12 @@
 
 namespace Mango.Services.OrderAPI.Database.Entities
 {
-    public class Order : DateTrackedPublicEntity
+    public class OrderOutgoing : DateTrackedPublicEntity
     {
-        public Order()
+        public OrderOutgoing()
         {
             CouponCode = string.Empty;
-            OrderItems = new List<OrderItem>();
+            OrderItems = new List<OrderItemOutgoing>();
 
             FirstName = string.Empty;
             LastName = string.Empty;
@@ -25,7 +25,7 @@ namespace Mango.Services.OrderAPI.Database.Entities
 
         public DateTime PickupDateTime { get; set; }
 
-        public List<OrderItem> OrderItems { get; set; }
+        public List<OrderItemOutgoing> OrderItems { get; set; }
 
         public int TotalItems { get; set; }
 

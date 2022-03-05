@@ -16,7 +16,7 @@ namespace Mango.Services.OrderAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PaymentStatus = table.Column<bool>(type: "bit", nullable: false),
-                    OrderDataTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OrderDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PickupDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TotalItems = table.Column<int>(type: "int", nullable: false),
                     CouponCode = table.Column<string>(type: "nvarchar(max)", nullable: false),

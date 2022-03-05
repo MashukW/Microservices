@@ -67,7 +67,7 @@ namespace Mango.Services.OrderAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("OrderDataTime")
+                    b.Property<DateTime>("OrderDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("PaymentStatus")

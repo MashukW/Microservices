@@ -16,7 +16,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
     public class CartService : ICartService
     {
         private readonly IUserAccessor _userAccessor;
-        private readonly IMessageBus _messageBus;
+        private readonly IMessagePublisher _messageBus;
         private readonly ICartProductService _cartProductService;
         private readonly IRepository<Cart> _cartRepository;
         private readonly IWorkUnit _workUnit;
@@ -24,7 +24,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
         public CartService(
             IUserAccessor userAccessor,
-            IMessageBus messageBus,
+            IMessagePublisher messageBus,
             ICartProductService cartProductService,
             IRepository<Cart> cartRepository,
             IWorkUnit workUnit,
@@ -146,6 +146,8 @@ namespace Mango.Services.ShoppingCartAPI.Services
 
             var checkoutMessage = _mapper.Map<CheckoutMessage>(incomingCheckout);
             await _messageBus.Publish(checkoutMessage, "checkout");
+
+            await Clear();
 
             return true;
         }

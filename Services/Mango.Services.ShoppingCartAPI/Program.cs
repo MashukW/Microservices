@@ -15,6 +15,8 @@ using Shared.Database.Repositories;
 using Shared.Message.Services;
 using Shared.Message.Services.Interfaces;
 using Shared.Options;
+using Shared.Services;
+using Shared.Services.Interfaces;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,7 +34,7 @@ builder.Services.Configure<MessageBusOptions>(builder.Configuration.GetSection(n
 
 builder.Services.AddScoped<ICartProductService, CartProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IMessageBus, AzureMessageBus>();
+builder.Services.AddScoped<IMessagePublisher, AzureMessagePublisher>();
 
 builder.Services.AddScoped<BaseDbContext, ApplicationDbContext>();
 
@@ -40,6 +42,11 @@ builder.Services.AddScoped<IRepository<Cart>, Repository<Cart>>();
 builder.Services.AddScoped<IRepository<CartProduct>, Repository<CartProduct>>();
 
 builder.Services.AddScoped<IWorkUnit, WorkUnit>();
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<ITokenAccessor, TokenAccessor>();
+
+builder.Services.AddScoped<IApiService, ApiService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

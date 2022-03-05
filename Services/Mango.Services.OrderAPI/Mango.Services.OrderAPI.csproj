@@ -15,14 +15,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Messages\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.Api\Shared.Api.csproj" />
     <ProjectReference Include="..\..\Shared\Shared.Database\Shared.Database.csproj" />
+    <ProjectReference Include="..\..\Shared\Shared.Message\Shared.Message.csproj" />
+    <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
   </ItemGroup>
 
 </Project>
