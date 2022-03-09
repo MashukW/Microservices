@@ -35,19 +35,30 @@ namespace Mango.Services.ProductAPI.Services
 
         public async Task<ProductApi> AddUpdate(ProductApi productDto)
         {
-            var product = _mapper.Map<ProductApi, Product>(productDto);
-            if (product.PublicId == Guid.Empty)
+            Product? product = null;
+            if (productDto.PublicId == Guid.Empty)
             {
+                product = _mapper.Map<ProductApi, Product>(productDto);
                 await _productRepository.Add(product);
             }
             else
             {
-                await _productRepository.Update(product);
+                product = await _productRepository.Query().FirstOrDefaultAsync(x => x.PublicId == productDto.PublicId);
+                if (product != null)
+                {
+                    product.Name = productDto.Name;
+                    product.CategoryName = productDto.CategoryName;
+                    product.Description = productDto.Description;
+                    product.Price = productDto.Price;
+                    product.ImageUrl = productDto.ImageUrl;
+
+                    await _productRepository.Update(product);
+                }
             }
 
             await _workUnit.SaveChanges();
 
-            return _mapper.Map<Product, ProductApi>(product);
+            return _mapper.Map<Product, ProductApi>(product ?? new Product());
         }
 
         public async Task<bool> Remove(Guid productId)

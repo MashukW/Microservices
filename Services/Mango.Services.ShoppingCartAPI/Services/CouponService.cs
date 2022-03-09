@@ -23,12 +23,10 @@ namespace Mango.Services.ShoppingCartAPI.Services
         public async Task<CouponApi> GetCoupon(string couponCode)
         {
             // var token = await _tokenAccessor.GetAccessToken();
-            // var requestDetails = ApiRequest.Create(AppConstants.CouponApi, $"api/coupon/{couponCode}", HttpMethod.Get, token);
-            // 
-            // var getCouponResult = await _httpService.Send<CouponApi>(requestDetails);
-            // // return _mapper.Map<CouponApi>(getCouponResult.Data);
+            var requestDetails = ApiRequest.Create(AppConstants.CouponApi, $"api/coupon/{couponCode}", HttpMethod.Get);
 
-            throw new NotImplementedException();
+            var getCouponResult = await _httpService.Send<CouponApi>(requestDetails);
+            return _mapper.Map<CouponApi>(getCouponResult.Data);
         }
     }
 }

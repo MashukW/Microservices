@@ -1,4 +1,5 @@
 using AutoMapper;
+using Mango.Services.ShoppingCartAPI;
 using Mango.Services.ShoppingCartAPI.Accessors;
 using Mango.Services.ShoppingCartAPI.Accessors.Interfaces;
 using Mango.Services.ShoppingCartAPI.Database;
@@ -27,13 +28,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IUserAccessor, UserAccessor>();
+
+AppConstants.CouponApi = builder.Configuration["ServiceUrls:CouponApi"];
 
 builder.Services.Configure<MessageBusOptions>(builder.Configuration.GetSection(nameof(MessageBusOptions)));
 
 builder.Services.AddScoped<ICartProductService, CartProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IMessagePublisher, AzureMessagePublisher>();
 
 builder.Services.AddScoped<BaseDbContext, ApplicationDbContext>();

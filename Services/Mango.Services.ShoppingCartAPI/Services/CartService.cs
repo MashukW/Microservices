@@ -18,6 +18,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
         private readonly IUserAccessor _userAccessor;
         private readonly IMessagePublisher _messageBus;
         private readonly ICartProductService _cartProductService;
+        private readonly ICouponService _couponService;
         private readonly IRepository<Cart> _cartRepository;
         private readonly IWorkUnit _workUnit;
         private readonly IMapper _mapper;
@@ -26,6 +27,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
             IUserAccessor userAccessor,
             IMessagePublisher messageBus,
             ICartProductService cartProductService,
+            ICouponService couponService,
             IRepository<Cart> cartRepository,
             IWorkUnit workUnit,
             IMapper mapper)
@@ -35,6 +37,8 @@ namespace Mango.Services.ShoppingCartAPI.Services
             _messageBus = messageBus;
 
             _cartProductService = cartProductService;
+
+            _couponService = couponService;
 
             _cartRepository = cartRepository;
 
@@ -139,6 +143,22 @@ namespace Mango.Services.ShoppingCartAPI.Services
             var userCart = await GetUserCart();
             if (userCart.IsInitial())
                 throw new NotFoundException("User cart not found");
+
+            if (!string.IsNullOrWhiteSpace(incomingCheckout.CouponCode))
+            {
+                var coupon = await _couponService.GetCoupon(incomingCheckout.CouponCode);
+                if (incomingCheckout.DiscountAmount != coupon.DiscountAmount)
+                {
+                    throw new ValidationErrorException(new ValidationMessage
+                    {
+                        Field = nameof(CheckoutIncoming.DiscountAmount),
+                        Messages = new List<string>
+                        {
+                            "Coupon Price has changed, please confirm"
+                        }
+                    });
+                }
+            }
 
             var excessItems = userCart.CartItems.Select(x => x.PublicId).Except(incomingCheckout.CartItems.Select(x => x.PublicId));
             if (excessItems.Any())

@@ -36,10 +36,13 @@ namespace Mango.Web.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _shoppingCartService.Checkout(checkout);
-                if (response)
+                if (string.IsNullOrWhiteSpace(response))
                 {
                     return RedirectToAction(nameof(Confirmation));
                 }
+
+                TempData["Error"] = response;
+                return RedirectToAction(nameof(CheckoutIndex));
             }
 
             return View(checkout);

@@ -112,7 +112,7 @@ namespace Mango.Web.Services
             return false;
         }
 
-        public async Task<bool> Checkout(CheckoutView checkout)
+        public async Task<string> Checkout(CheckoutView checkout)
         {
             var token = await _tokenAccessor.GetAccessToken();
 
@@ -121,9 +121,15 @@ namespace Mango.Web.Services
 
             var checkoutResponse = await _httpService.Send<bool>(requestCheckout);
             if (checkoutResponse.IsSuccess)
-                return checkoutResponse.Data;
+                return string.Empty;
 
-            return false;
+            if (checkoutResponse?.ValidationMessages is not null && checkoutResponse.ValidationMessages.Any())
+                return string.Join("\n", checkoutResponse.ValidationMessages.SelectMany(x => x?.Messages == null ? new List<string>() : x.Messages));
+
+            if (checkoutResponse?.ErrorMessage is not null)
+                return checkoutResponse.ErrorMessage;
+
+            return string.Empty;
         }
 
         private async Task<CartView> GetCartView(CartApi cart)

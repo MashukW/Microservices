@@ -15,7 +15,7 @@ namespace Mango.Web.Services
 
         Task<bool> RemoveCoupon();
 
-        Task<bool> Checkout(CheckoutView checkout);
+        Task<string> Checkout(CheckoutView checkout);
 
         Task<bool> Clear();
     }
