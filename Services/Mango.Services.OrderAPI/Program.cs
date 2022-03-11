@@ -38,8 +38,11 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.Configure<MessageBusOptions>(builder.Configuration.GetSection(nameof(MessageBusOptions)));
 
+builder.Services.AddScoped<IMessagePublisher, AzureMessagePublisher>();
 builder.Services.AddScoped<IMessageConsumer, AzureMessageConsumer>();
+
 builder.Services.AddScoped<IOrderMessageConsumer, OrderMessageConsumer>();
+builder.Services.AddScoped<IUpdatePaymentStatusMessageConsumer, UpdatePaymentStatusMessageConsumer>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

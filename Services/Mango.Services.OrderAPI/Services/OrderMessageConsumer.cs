@@ -16,17 +16,21 @@ namespace Mango.Services.OrderAPI.Services
     {
         private readonly DbContextOptions<ApplicationDbContext> _dbContextOptions;
         private readonly IMessageConsumer _messageConsumer;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly IMapper _mapper;
 
         public OrderMessageConsumer(
+            DbContextOptions<ApplicationDbContext> dbContextOptions,
             IMessageConsumer messageConsumer,
-            IMapper mapper,
-            DbContextOptions<ApplicationDbContext> dbContextOptions)
+            IMessagePublisher messagePublisher,
+            IMapper mapper)
         {
-            _messageConsumer = messageConsumer;
-            _mapper = mapper;
-
             _dbContextOptions = dbContextOptions;
+
+            _messageConsumer = messageConsumer;
+            _messagePublisher = messagePublisher;
+
+            _mapper = mapper;
         }
 
         public async Task Start()
@@ -41,16 +45,38 @@ namespace Mango.Services.OrderAPI.Services
 
         public async Task ProcessNewOrder(ProcessMessageEventArgs messageArgs)
         {
-            var message = messageArgs.Message;
-            var messageBody = Encoding.UTF8.GetString(message.Body);
+            try
+            {
+                var message = messageArgs.Message;
+                var messageBody = Encoding.UTF8.GetString(message.Body);
 
-            var orderMessage = JsonSerializer.Deserialize<OrderMessage>(messageBody, JsonOptionsConfiguration.Options);
+                var orderMessage = JsonSerializer.Deserialize<OrderMessage>(messageBody, JsonOptionsConfiguration.Options);
 
-            var order = _mapper.Map<Order>(orderMessage);
+                var order = _mapper.Map<Order>(orderMessage);
 
-            await using var database = new ApplicationDbContext(_dbContextOptions);
-            await database.AddAsync(order);
-            await database.SaveChangesAsync();
+                await using var database = new ApplicationDbContext(_dbContextOptions);
+                await database.AddAsync(order);
+                await database.SaveChangesAsync();
+
+                var paymentRequestMessage = new PaymentRequestMessage
+                {
+                    OrderId = order.PublicId,
+                    UserName = $"{order.FirstName} {order.LastName}",
+                    CardNumber = order.CardNumber,
+                    Cvv = order.Cvv,
+                    ExpityMonthYear = order.ExpityMonthYear,
+                    OrderTotalCost = order.TotalCost,
+                    Created = DateTime.UtcNow
+                };
+
+                await _messagePublisher.Publish(paymentRequestMessage, "order-payment-request");
+                await messageArgs.CompleteMessageAsync(messageArgs.Message);
+            }
+            catch (Exception ex)
+            {
+                // log exception
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
