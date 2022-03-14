@@ -66,7 +66,8 @@ namespace Mango.Services.OrderAPI.Services
                     Cvv = order.Cvv,
                     ExpityMonthYear = order.ExpityMonthYear,
                     OrderTotalCost = order.TotalCost,
-                    Created = DateTime.UtcNow
+                    Created = DateTime.UtcNow,
+                    Email = order.Email,
                 };
 
                 await _messagePublisher.Publish(paymentRequestMessage, "order-payment-request");

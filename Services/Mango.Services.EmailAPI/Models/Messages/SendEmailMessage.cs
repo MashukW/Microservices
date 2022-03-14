@@ -1,8 +1,8 @@
 ﻿using Shared.Message.Messages;
 
-namespace Mango.Services.PaymentAPI.Models.Messages
+namespace Mango.Services.EmailAPI.Models.Messages
 {
-    public class UpdatePaymentStatusMessage : BaseMessage
+    public class SendEmailMessage : BaseMessage
     {
         public Guid OrderId { get; set; }
 

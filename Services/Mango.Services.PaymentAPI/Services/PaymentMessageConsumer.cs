@@ -51,7 +51,8 @@ namespace Mango.Services.PaymentAPI.Services
                     var updatePaymentStatusMessage = new UpdatePaymentStatusMessage
                     {
                         OrderId = paymentRequestMessage.OrderId,
-                        Status = isPaid
+                        Status = isPaid,
+                        Email = "success@mymail.com"
                     };
 
                     await _messagePublisher.Publish(updatePaymentStatusMessage, "update-order-payment-status");

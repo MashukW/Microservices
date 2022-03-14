@@ -23,5 +23,7 @@ namespace Mango.Services.OrderAPI.Models.Messages
         public string ExpityMonthYear { get; set; }
 
         public double OrderTotalCost { get; set; }
+
+        public string? Email { get; set; }
     }
 }

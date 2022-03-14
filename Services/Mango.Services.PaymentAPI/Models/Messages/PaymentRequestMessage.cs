@@ -1,27 +1,28 @@
 ﻿using Shared.Message.Messages;
 
-namespace Mango.Services.PaymentAPI.Models.Messages
+namespace Mango.Services.PaymentAPI.Models.Messages;
+
+public class PaymentRequestMessage : BaseMessage
 {
-    public class PaymentRequestMessage : BaseMessage
+    public PaymentRequestMessage()
     {
-        public PaymentRequestMessage()
-        {
-            UserName = string.Empty;
-            CardNumber = string.Empty;
-            Cvv = string.Empty;
-            ExpityMonthYear = string.Empty;
-        }
-
-        public Guid OrderId { get; set; }
-
-        public string UserName { get; set; }
-
-        public string CardNumber { get; set; }
-
-        public string Cvv { get; set; }
-
-        public string ExpityMonthYear { get; set; }
-
-        public double OrderTotalCost { get; set; }
+        UserName = string.Empty;
+        CardNumber = string.Empty;
+        Cvv = string.Empty;
+        ExpityMonthYear = string.Empty;
     }
+
+    public Guid OrderId { get; set; }
+
+    public string UserName { get; set; }
+
+    public string CardNumber { get; set; }
+
+    public string Cvv { get; set; }
+
+    public string ExpityMonthYear { get; set; }
+
+    public double OrderTotalCost { get; set; }
+
+    public string? Email { get; set; }
 }
