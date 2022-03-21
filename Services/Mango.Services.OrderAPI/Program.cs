@@ -11,8 +11,8 @@ using Shared.Api.Middlewares;
 using Shared.Configurations;
 using Shared.Database;
 using Shared.Database.Repositories;
-using Shared.Message.Services;
 using Shared.Message.Services.Interfaces;
+using Shared.Message.Services.RabbitMq;
 using Shared.Options;
 using System.Reflection;
 
@@ -29,6 +29,19 @@ builder.Services.AddSingleton<DbContextOptions<ApplicationDbContext>>(x =>
 
 builder.Services.AddDbContext<BaseDbContext, ApplicationDbContext>();
 
+builder.Services.AddHostedService<BackgroundOrderMessageConsumer>(serviceProvider =>
+{
+    using var scope = serviceProvider.CreateScope();
+    var dbContextOptions = serviceProvider.GetService<DbContextOptions<ApplicationDbContext>>();
+    var messageConsumer = scope.ServiceProvider.GetService<IMessageConsumer>();
+    var messagePublisher = scope.ServiceProvider.GetService<IMessagePublisher>();
+    var mapper = scope.ServiceProvider.GetService<IMapper>();
+
+    var backgroundOrderMessageConsumer = new BackgroundOrderMessageConsumer(dbContextOptions, messageConsumer, messagePublisher, mapper);
+
+    return backgroundOrderMessageConsumer;
+});
+
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddScoped<IRepository<Order>, Repository<Order>>();
@@ -38,11 +51,14 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.Configure<MessageBusOptions>(builder.Configuration.GetSection(nameof(MessageBusOptions)));
 
-builder.Services.AddScoped<IMessagePublisher, AzureMessagePublisher>();
-builder.Services.AddScoped<IMessageConsumer, AzureMessageConsumer>();
+builder.Services.AddScoped<IMessagePublisher, RabbitMqMessagePublisher>();
+builder.Services.AddScoped<IMessageConsumer, RabbitMqMessageConsumer>();
 
-builder.Services.AddScoped<IOrderMessageConsumer, OrderMessageConsumer>();
-builder.Services.AddScoped<IUpdatePaymentStatusMessageConsumer, UpdatePaymentStatusMessageConsumer>();
+// builder.Services.AddScoped<IMessagePublisher, AzureMessagePublisher>();
+// builder.Services.AddScoped<IMessageConsumer, AzureMessageConsumer>();
+
+// builder.Services.AddScoped<IOrderMessageConsumer, OrderMessageConsumer>();
+// builder.Services.AddScoped<IUpdatePaymentStatusMessageConsumer, UpdatePaymentStatusMessageConsumer>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

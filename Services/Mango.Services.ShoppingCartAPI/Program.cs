@@ -13,8 +13,8 @@ using Shared.Api.Middlewares;
 using Shared.Configurations;
 using Shared.Database;
 using Shared.Database.Repositories;
-using Shared.Message.Services;
 using Shared.Message.Services.Interfaces;
+using Shared.Message.Services.RabbitMq;
 using Shared.Options;
 using Shared.Services;
 using Shared.Services.Interfaces;
@@ -40,7 +40,7 @@ builder.Services.Configure<MessageBusOptions>(builder.Configuration.GetSection(n
 builder.Services.AddScoped<ICartProductService, CartProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
-builder.Services.AddScoped<IMessagePublisher, AzureMessagePublisher>();
+builder.Services.AddScoped<IMessagePublisher, RabbitMqMessagePublisher>();
 
 builder.Services.AddScoped<BaseDbContext, ApplicationDbContext>();
 

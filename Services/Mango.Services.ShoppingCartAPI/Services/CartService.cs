@@ -199,7 +199,7 @@ namespace Mango.Services.ShoppingCartAPI.Services
                 .Include(x => x.CartItems).ThenInclude(x => x.Product)
                 .FirstOrDefaultAsync(x => x.UserPublicId == appUser.Id);
 
-            return userCart ?? new Cart();
+            return userCart ?? new Cart { UserPublicId = appUser.Id };
         }
     }
 }

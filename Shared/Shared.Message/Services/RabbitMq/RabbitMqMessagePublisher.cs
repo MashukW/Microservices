@@ -19,26 +19,49 @@ namespace Shared.Message.Services.RabbitMq
             _messageBusOptions = messageBusOptions.Value;
         }
 
-        public Task Publish<T>(T message, string topicName) where T : BaseMessage
+        public async Task Publish<T>(T message, string topicName) where T : BaseMessage
         {
-            var factory = new ConnectionFactory
+            if (ConnectionExists())
             {
-                HostName = _messageBusOptions.HostName,
-                UserName = _messageBusOptions.UserName,
-                Password = _messageBusOptions.Password
-            };
+                using var channel = _connection.CreateModel();
+                channel.QueueDeclare(queue: topicName, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-            _connection = factory.CreateConnection();
+                var messageJson = JsonSerializer.Serialize(message, JsonOptionsConfiguration.Options);
+                var messageBody = Encoding.UTF8.GetBytes(messageJson);
 
-            using var channel = _connection.CreateModel();
-            channel.QueueDeclare(queue: topicName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                await Task.Run(() => channel.BasicPublish(exchange: "", routingKey: topicName, basicProperties: null, body: messageBody));
+            }
+        }
 
-            var messageJson = JsonSerializer.Serialize(message, JsonOptionsConfiguration.Options);
-            var messageBody = Encoding.UTF8.GetBytes(messageJson);
+        private void CreateConnection()
+        {
+            try
+            {
+                var factory = new ConnectionFactory
+                {
+                    HostName = _messageBusOptions.HostName,
+                    UserName = _messageBusOptions.UserName,
+                    Password = _messageBusOptions.Password
+                };
 
-            channel.BasicPublish(exchange: "", routingKey: topicName, basicProperties: null, body: messageBody);
+                _connection = factory.CreateConnection();
 
-            throw new NotImplementedException();
+            }
+            catch (Exception ex)
+            {
+                // log exception
+            }
+        }
+
+        private bool ConnectionExists()
+        {
+            if (_connection != null)
+            {
+                return true;
+            }
+
+            CreateConnection();
+            return _connection != null;
         }
     }
 }

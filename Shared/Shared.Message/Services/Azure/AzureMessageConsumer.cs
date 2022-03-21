@@ -1,5 +1,7 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using Shared.Message.Services.Interfaces;
 using Shared.Options;
 
@@ -39,6 +41,11 @@ namespace Shared.Message.Services
         {
             Console.WriteLine(messageArgs.Exception.ToString());
             return Task.CompletedTask;
+        }
+
+        public void StartProcessing(string topic, string subscription, EventHandler<BasicDeliverEventArgs> processMessage, EventHandler<ShutdownEventArgs>? processError = null)
+        {
+            throw new NotSupportedException();
         }
     }
 }

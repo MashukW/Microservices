@@ -29,11 +29,11 @@ namespace Mango.Services.CouponAPI.Migrations
                 columns: new[] { "Id", "Code", "DiscountAmount", "PublicId" },
                 values: new object[,]
                 {
-                    { 1, "10OFF", 10.0, new Guid("770a4868-d099-4b62-ab22-ff62ab4929c7") },
-                    { 2, "20OFF", 20.0, new Guid("20315dc3-9772-4343-afb5-646d21ad7c78") },
-                    { 3, "30OFF", 30.0, new Guid("1783df47-55b6-44b9-8f84-a4e64318308c") },
-                    { 4, "40OFF", 40.0, new Guid("e70dd92d-8c28-4a1c-aeda-a3071d0df91d") },
-                    { 5, "50OFF", 50.0, new Guid("92c9e9ec-99c8-453e-9435-303e33b98001") }
+                    { 1, "10OFF", 10.0, new Guid("21127ea1-7c7a-47df-b5e5-e83c45ca112b") },
+                    { 2, "20OFF", 20.0, new Guid("6109c6ee-0193-4728-ae49-01a447d16831") },
+                    { 3, "30OFF", 30.0, new Guid("42de469a-3842-4b6b-8f37-8f7d50213b48") },
+                    { 4, "40OFF", 40.0, new Guid("bf84eec2-ec47-4468-b049-1c00b3f317d6") },
+                    { 5, "50OFF", 50.0, new Guid("e53c63bd-a2a3-4e7a-b997-907fe0d66aa7") }
                 });
         }
 

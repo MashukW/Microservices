@@ -17,7 +17,7 @@ namespace Mango.Services.CouponAPI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -50,35 +50,35 @@ namespace Mango.Services.CouponAPI.Migrations
                             Id = 1,
                             Code = "10OFF",
                             DiscountAmount = 10.0,
-                            PublicId = new Guid("770a4868-d099-4b62-ab22-ff62ab4929c7")
+                            PublicId = new Guid("21127ea1-7c7a-47df-b5e5-e83c45ca112b")
                         },
                         new
                         {
                             Id = 2,
                             Code = "20OFF",
                             DiscountAmount = 20.0,
-                            PublicId = new Guid("20315dc3-9772-4343-afb5-646d21ad7c78")
+                            PublicId = new Guid("6109c6ee-0193-4728-ae49-01a447d16831")
                         },
                         new
                         {
                             Id = 3,
                             Code = "30OFF",
                             DiscountAmount = 30.0,
-                            PublicId = new Guid("1783df47-55b6-44b9-8f84-a4e64318308c")
+                            PublicId = new Guid("42de469a-3842-4b6b-8f37-8f7d50213b48")
                         },
                         new
                         {
                             Id = 4,
                             Code = "40OFF",
                             DiscountAmount = 40.0,
-                            PublicId = new Guid("e70dd92d-8c28-4a1c-aeda-a3071d0df91d")
+                            PublicId = new Guid("bf84eec2-ec47-4468-b049-1c00b3f317d6")
                         },
                         new
                         {
                             Id = 5,
                             Code = "50OFF",
                             DiscountAmount = 50.0,
-                            PublicId = new Guid("92c9e9ec-99c8-453e-9435-303e33b98001")
+                            PublicId = new Guid("e53c63bd-a2a3-4e7a-b997-907fe0d66aa7")
                         });
                 });
 #pragma warning restore 612, 618

@@ -17,7 +17,7 @@ namespace Mango.Services.ProductAPI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -62,7 +62,7 @@ namespace Mango.Services.ProductAPI.Migrations
                             ImageUrl = "https://learnmicroservicessa.blob.core.windows.net/mango/products/14.jpg",
                             Name = "Samosa",
                             Price = 15.0,
-                            PublicId = new Guid("e4dd239e-2222-4d10-88d2-a1695a228813")
+                            PublicId = new Guid("dd2f404d-6c22-4f0e-85f7-c1c4f70cb3a6")
                         },
                         new
                         {
@@ -72,7 +72,7 @@ namespace Mango.Services.ProductAPI.Migrations
                             ImageUrl = "https://learnmicroservicessa.blob.core.windows.net/mango/products/12.jpg",
                             Name = "Paneer Tikka",
                             Price = 13.99,
-                            PublicId = new Guid("ba80ebc2-13aa-4e36-9580-45e851e603b0")
+                            PublicId = new Guid("66356c67-d1ba-41f6-8c9a-fc5c7e8ecf30")
                         },
                         new
                         {
@@ -82,7 +82,7 @@ namespace Mango.Services.ProductAPI.Migrations
                             ImageUrl = "https://learnmicroservicessa.blob.core.windows.net/mango/products/11.jpg",
                             Name = "Sweet Pie",
                             Price = 10.99,
-                            PublicId = new Guid("20ca287d-c880-48b8-aab8-65b6843d34e5")
+                            PublicId = new Guid("e6fcd523-5c7a-435a-ac75-fae71df4c8cb")
                         },
                         new
                         {
@@ -92,7 +92,7 @@ namespace Mango.Services.ProductAPI.Migrations
                             ImageUrl = "https://learnmicroservicessa.blob.core.windows.net/mango/products/13.jpg",
                             Name = "Pav Bhaji",
                             Price = 15.0,
-                            PublicId = new Guid("a9235539-9b06-4dfd-aaf4-67fd291d7c2d")
+                            PublicId = new Guid("a95dfe73-eadd-41e4-8d57-6fbd76693c12")
                         });
                 });
 #pragma warning restore 612, 618
