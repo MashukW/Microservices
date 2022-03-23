@@ -11,8 +11,8 @@ using Shared.Api.Middlewares;
 using Shared.Configurations;
 using Shared.Database;
 using Shared.Database.Repositories;
+using Shared.Message.Services;
 using Shared.Message.Services.Interfaces;
-using Shared.Message.Services.RabbitMq;
 using Shared.Options;
 using System.Reflection;
 
@@ -51,14 +51,14 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.Configure<MessageBusOptions>(builder.Configuration.GetSection(nameof(MessageBusOptions)));
 
-builder.Services.AddScoped<IMessagePublisher, RabbitMqMessagePublisher>();
-builder.Services.AddScoped<IMessageConsumer, RabbitMqMessageConsumer>();
+// builder.Services.AddScoped<IMessagePublisher, RabbitMqMessagePublisher>();
+// builder.Services.AddScoped<IMessageConsumer, RabbitMqMessageConsumer>();
 
-// builder.Services.AddScoped<IMessagePublisher, AzureMessagePublisher>();
-// builder.Services.AddScoped<IMessageConsumer, AzureMessageConsumer>();
+builder.Services.AddScoped<IMessagePublisher, AzureMessagePublisher>();
+builder.Services.AddScoped<IMessageConsumer, AzureMessageConsumer>();
 
-// builder.Services.AddScoped<IOrderMessageConsumer, OrderMessageConsumer>();
-// builder.Services.AddScoped<IUpdatePaymentStatusMessageConsumer, UpdatePaymentStatusMessageConsumer>();
+builder.Services.AddScoped<IOrderMessageConsumer, OrderMessageConsumer>();
+builder.Services.AddScoped<IUpdatePaymentStatusMessageConsumer, UpdatePaymentStatusMessageConsumer>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
