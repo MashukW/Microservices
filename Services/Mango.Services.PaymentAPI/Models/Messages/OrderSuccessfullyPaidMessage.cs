@@ -2,7 +2,7 @@
 
 namespace Mango.Services.PaymentAPI.Models.Messages
 {
-    public class UpdatePaymentStatusMessage : BaseMessage
+    public class OrderSuccessfullyPaidMessage : BaseMessage
     {
         public Guid OrderId { get; set; }
 

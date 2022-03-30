@@ -1,9 +1,9 @@
 ﻿using Shared.Message.Messages;
+using Shared.Message.Options;
 
-namespace Shared.Message.Services.Interfaces
+namespace Shared.Message.Services.Interfaces;
+
+public interface IMessagePublisher
 {
-    public interface IMessagePublisher
-    {
-        Task Publish<T>(T message, string topicName) where T : BaseMessage;
-    }
+    Task Publish<T>(T message, IMessageOptions options) where T : BaseMessage;
 }

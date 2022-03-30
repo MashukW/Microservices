@@ -1,15 +1,10 @@
-﻿using Azure.Messaging.ServiceBus;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
+﻿using Shared.Message.Options;
 
-namespace Shared.Message.Services.Interfaces
+namespace Shared.Message.Services.Interfaces;
+
+public interface IMessageConsumer
 {
-    public interface IMessageConsumer
-    {
-        Task StartProcessing(string topic, string subscription, Func<ProcessMessageEventArgs, Task> processMessage, Func<ProcessErrorEventArgs, Task>? processError = null);
+    Task StartProcessing(IMessageOptions options, Func<string, Task> processMessage, Func<string, Task>? processError = null);
 
-        void StartProcessing(string topic, string subscription, EventHandler<BasicDeliverEventArgs> processMessage, EventHandler<ShutdownEventArgs>? processError = null);
-
-        Task StopProcessing();
-    }
+    Task StopProcessing();
 }

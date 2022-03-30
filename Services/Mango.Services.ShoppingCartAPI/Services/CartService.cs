@@ -6,17 +6,22 @@ using Mango.Services.ShoppingCartAPI.Models.Messages;
 using Mango.Services.ShoppingCartAPI.Models.Outgoing;
 using Mango.Services.ShoppingCartAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Shared.Database.Repositories;
 using Shared.Exceptions;
+using Shared.Message;
+using Shared.Message.Options.RabbitMq;
 using Shared.Message.Services.Interfaces;
 using Shared.Models;
+using Shared.Options;
 
 namespace Mango.Services.ShoppingCartAPI.Services
 {
     public class CartService : ICartService
     {
+        private readonly MessageBusOptions _messageBusOptions;
         private readonly IUserAccessor _userAccessor;
-        private readonly IMessagePublisher _messageBus;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly ICartProductService _cartProductService;
         private readonly ICouponService _couponService;
         private readonly IRepository<Cart> _cartRepository;
@@ -24,17 +29,20 @@ namespace Mango.Services.ShoppingCartAPI.Services
         private readonly IMapper _mapper;
 
         public CartService(
+            IOptions<MessageBusOptions> messageBusOptions,
             IUserAccessor userAccessor,
-            IMessagePublisher messageBus,
+            IMessagePublisher messagePublisher,
             ICartProductService cartProductService,
             ICouponService couponService,
             IRepository<Cart> cartRepository,
             IWorkUnit workUnit,
             IMapper mapper)
         {
+            _messageBusOptions = messageBusOptions.Value;
+
             _userAccessor = userAccessor;
 
-            _messageBus = messageBus;
+            _messagePublisher = messagePublisher;
 
             _cartProductService = cartProductService;
 
@@ -165,7 +173,23 @@ namespace Mango.Services.ShoppingCartAPI.Services
                 throw new ValidationErrorException(new ValidationMessage { Field = nameof(incomingCheckout.CartItems), Messages = new List<string> { "Incorrect items in the request" } });
 
             var checkoutMessage = _mapper.Map<CheckoutMessage>(incomingCheckout);
-            await _messageBus.Publish(checkoutMessage, "checkout");
+
+            // Azure
+            // await _messagePublisher.Publish(checkoutMessage, new AzurePublishOptions
+            // {
+            //     ConnectionString = _messageBusOptions.ConnectionString,
+            //     PublishTopicOrQueue = MessageConstants.Azure.Topics.CheckoutOrder
+            // });
+
+            // RabbitMq
+            await _messagePublisher.Publish(checkoutMessage, new RabbitMqPublishOptions
+            {
+                HostName = _messageBusOptions.HostName,
+                UserName = _messageBusOptions.UserName,
+                Password = _messageBusOptions.Password,
+                ExchangeName = MessageConstants.RabbitMq.Exchanges.CheckoutDirect,
+                RoutingKey = MessageConstants.RabbitMq.RoutingKeys.CheckoutOrder
+            });
 
             await Clear();
 

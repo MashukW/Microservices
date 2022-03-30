@@ -1,29 +1,51 @@
 ﻿using Azure.Messaging.ServiceBus;
-using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
+using Shared.Message.Options;
+using Shared.Message.Options.Azure;
 using Shared.Message.Services.Interfaces;
-using Shared.Options;
+using System.Text;
 
-namespace Shared.Message.Services
+namespace Shared.Message.Services.Azure
 {
     public class AzureMessageConsumer : IMessageConsumer
     {
-        private readonly MessageBusOptions _messageBusOptions;
         private ServiceBusProcessor? _serviceBusProcessor;
 
-        public AzureMessageConsumer(IOptions<MessageBusOptions> messageBusOptions)
+        public async Task StartProcessing(IMessageOptions options, Func<string, Task> handleMessage, Func<string, Task>? handleError = null)
         {
-            _messageBusOptions = messageBusOptions.Value;
-        }
+            if (options is AzureTopicConsumeMessageOptions azureTopicConsumeOptions)
+            {
+                var client = new ServiceBusClient(azureTopicConsumeOptions.ConnectionString);
+                _serviceBusProcessor = client.CreateProcessor(azureTopicConsumeOptions.ConsumptionTopic, azureTopicConsumeOptions.ConsumptionSubscription);
+            }
+            else if (options is AzureQueueConsumeMessageOptions azureQueueConsumeOptions)
+            {
+                var client = new ServiceBusClient(azureQueueConsumeOptions.ConnectionString);
+                _serviceBusProcessor = client.CreateProcessor(azureQueueConsumeOptions.ConsumptionQueue);
+            }
+            else
+            {
+                throw new NotSupportedException($"Type '{options.GetType().FullName}' does not support. Method support 'queue' and 'topic' only.");
+            }
 
-        public async Task StartProcessing(string topic, string subscription, Func<ProcessMessageEventArgs, Task> processMessage, Func<ProcessErrorEventArgs, Task>? processError = null)
-        {
-            var client = new ServiceBusClient(_messageBusOptions.ConnectionString);
-            _serviceBusProcessor = client.CreateProcessor(topic, subscription);
+            _serviceBusProcessor.ProcessMessageAsync += async (args) =>
+            {
+                var message = args.Message;
+                var messageBody = Encoding.UTF8.GetString(message.Body);
 
-            _serviceBusProcessor.ProcessMessageAsync += processMessage;
-            _serviceBusProcessor.ProcessErrorAsync += processError ?? ProcessError;
+                await handleMessage(messageBody);
+
+                await args.CompleteMessageAsync(args.Message);
+            };
+
+            _serviceBusProcessor.ProcessErrorAsync += async (args) =>
+            {
+                var errorMessage = args.Exception.ToString();
+
+                if (handleError is null)
+                    Console.WriteLine(errorMessage);
+                else
+                    await handleError(errorMessage);
+            };
 
             await _serviceBusProcessor.StartProcessingAsync();
         }
@@ -35,17 +57,6 @@ namespace Shared.Message.Services
                 await _serviceBusProcessor.StopProcessingAsync();
                 await _serviceBusProcessor.DisposeAsync();
             }
-        }
-
-        private Task ProcessError(ProcessErrorEventArgs messageArgs)
-        {
-            Console.WriteLine(messageArgs.Exception.ToString());
-            return Task.CompletedTask;
-        }
-
-        public void StartProcessing(string topic, string subscription, EventHandler<BasicDeliverEventArgs> processMessage, EventHandler<ShutdownEventArgs>? processError = null)
-        {
-            throw new NotSupportedException();
         }
     }
 }

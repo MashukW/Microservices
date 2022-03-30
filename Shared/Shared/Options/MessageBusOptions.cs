@@ -8,20 +8,16 @@
             UserName = string.Empty;
             Password = string.Empty;
             ConnectionString = string.Empty;
-            Topic = string.Empty;
-            Subscription = string.Empty;
         }
 
+        // RabbitMq
         public string HostName { get; set; }
 
         public string UserName { get; set; }
 
         public string Password { get; set; }
 
+        // Azure
         public string ConnectionString { get; set; }
-
-        public string Topic { get; set; }
-
-        public string Subscription { get; set; }
     }
 }

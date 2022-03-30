@@ -1,18 +1,19 @@
 using AutoMapper;
 using Mango.Services.OrderAPI.Database;
 using Mango.Services.OrderAPI.Database.Entities;
-using Mango.Services.OrderAPI.Extensions;
+using Mango.Services.OrderAPI.MessageConsumers;
 using Mango.Services.OrderAPI.Services;
 using Mango.Services.OrderAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Shared.Api.Middlewares;
 using Shared.Configurations;
 using Shared.Database;
 using Shared.Database.Repositories;
-using Shared.Message.Services;
 using Shared.Message.Services.Interfaces;
+using Shared.Message.Services.RabbitMq;
 using Shared.Options;
 using System.Reflection;
 
@@ -29,17 +30,17 @@ builder.Services.AddSingleton<DbContextOptions<ApplicationDbContext>>(x =>
 
 builder.Services.AddDbContext<BaseDbContext, ApplicationDbContext>();
 
-builder.Services.AddHostedService<BackgroundOrderMessageConsumer>(serviceProvider =>
+builder.Services.AddHostedService<CheckoutOrderHandler>(serviceProvider =>
 {
-    using var scope = serviceProvider.CreateScope();
     var dbContextOptions = serviceProvider.GetService<DbContextOptions<ApplicationDbContext>>();
+
+    using var scope = serviceProvider.CreateScope();
     var messageConsumer = scope.ServiceProvider.GetService<IMessageConsumer>();
     var messagePublisher = scope.ServiceProvider.GetService<IMessagePublisher>();
     var mapper = scope.ServiceProvider.GetService<IMapper>();
+    var messageBusOptions = scope.ServiceProvider.GetService<IOptions<MessageBusOptions>>();
 
-    var backgroundOrderMessageConsumer = new BackgroundOrderMessageConsumer(dbContextOptions, messageConsumer, messagePublisher, mapper);
-
-    return backgroundOrderMessageConsumer;
+    return new CheckoutOrderHandler(messageBusOptions, dbContextOptions, messageConsumer, messagePublisher, mapper);
 });
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
@@ -47,18 +48,15 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<IRepository<Order>, Repository<Order>>();
 builder.Services.AddScoped<IWorkUnit, WorkUnit>();
 
-builder.Services.AddScoped<IOrderService, OrderService>();
-
 builder.Services.Configure<MessageBusOptions>(builder.Configuration.GetSection(nameof(MessageBusOptions)));
 
-// builder.Services.AddScoped<IMessagePublisher, RabbitMqMessagePublisher>();
-// builder.Services.AddScoped<IMessageConsumer, RabbitMqMessageConsumer>();
+// builder.Services.AddScoped<IMessagePublisher, AzureMessagePublisher>();
+// builder.Services.AddScoped<IMessageConsumer, AzureMessageConsumer>();
 
-builder.Services.AddScoped<IMessagePublisher, AzureMessagePublisher>();
-builder.Services.AddScoped<IMessageConsumer, AzureMessageConsumer>();
+builder.Services.AddScoped<IMessagePublisher, RabbitMqMessagePublisher>();
+builder.Services.AddScoped<IMessageConsumer, RabbitMqMessageConsumer>();
 
-builder.Services.AddScoped<IOrderMessageConsumer, OrderMessageConsumer>();
-builder.Services.AddScoped<IUpdatePaymentStatusMessageConsumer, UpdatePaymentStatusMessageConsumer>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -144,6 +142,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseOrderMessageConsumer();
+app.UseOrderPaymentSuccessUpdateStatusHandler();
 
 app.Run();

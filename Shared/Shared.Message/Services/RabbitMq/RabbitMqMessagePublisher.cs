@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using Shared.Configurations;
 using Shared.Message.Messages;
+using Shared.Message.Options;
+using Shared.Message.Options.RabbitMq;
 using Shared.Message.Services.Interfaces;
-using Shared.Options;
 using System.Text;
 using System.Text.Json;
 
@@ -11,93 +11,40 @@ namespace Shared.Message.Services.RabbitMq
 {
     public class RabbitMqMessagePublisher : IMessagePublisher
     {
-        private readonly MessageBusOptions _messageBusOptions;
-        private IConnection? _connection;
-
-        public RabbitMqMessagePublisher(IOptions<MessageBusOptions> messageBusOptions)
+        public Task Publish<T>(T message, IMessageOptions options) where T : BaseMessage
         {
-            _messageBusOptions = messageBusOptions.Value;
-        }
-
-        public async Task Publish<T>(T message, string topicName) where T : BaseMessage
-        {
-            /*
-             --> ExchangeType.Fanout
-            if (ConnectionExists())
-            {
-                using var channel = _connection.CreateModel();
-                channel.ExchangeDeclare(exchange: "EXCHANGE_NAME", type: ExchangeType.Fanout, durable: false, autoDelete: false, arguments: null);
-                var queueName = channel.QueueDeclare().QueueName;
-                channel.QueueBind(queue: queueName, exchange: "EXCHANGE_NAME", routingKey: "", arguments: null);
-
-                var messageJson = JsonSerializer.Serialize(message, JsonOptionsConfiguration.Options);
-                var messageBody = Encoding.UTF8.GetBytes(messageJson);
-
-                await Task.Run(() => channel.BasicPublish(exchange: "EXCHANGE_NAME", routingKey: "", basicProperties: null, body: messageBody));
-            }
-
-            --> ExchangeType.Direct
-            if (ConnectionExists())
-            {
-                using var channel = _connection.CreateModel();
-                channel.ExchangeDeclare(exchange: "EXCHANGE_NAME", type: ExchangeType.Direct, durable: false, autoDelete: false, arguments: null);
-                
-                
-                channel.QueueDeclare("Queue_1", false, false, false, null);
-                channel.QueueDeclare("Queue_2", false, false, false, null);
-
-                channel.QueueBind(queue: "Queue_1", exchange: "EXCHANGE_NAME", routingKey: "RoutingKey_1", arguments: null);
-                channel.QueueBind(queue: "Queue_2", exchange: "EXCHANGE_NAME", routingKey: "RoutingKey_2", arguments: null);
-
-                var messageJson = JsonSerializer.Serialize(message, JsonOptionsConfiguration.Options);
-                var messageBody = Encoding.UTF8.GetBytes(messageJson);
-
-                await Task.Run(() => channel.BasicPublish(exchange: "EXCHANGE_NAME", routingKey: "RoutingKey_1", basicProperties: null, body: messageBody));
-                await Task.Run(() => channel.BasicPublish(exchange: "EXCHANGE_NAME", routingKey: "RoutingKey_2", basicProperties: null, body: messageBody));
-            }
-            */
-
-            if (ConnectionExists())
-            {
-                using var channel = _connection.CreateModel();
-                channel.QueueDeclare(queue: topicName, durable: false, exclusive: false, autoDelete: false, arguments: null);
-
-                var messageJson = JsonSerializer.Serialize(message, JsonOptionsConfiguration.Options);
-                var messageBody = Encoding.UTF8.GetBytes(messageJson);
-
-                await Task.Run(() => channel.BasicPublish(exchange: "", routingKey: topicName, basicProperties: null, body: messageBody));
-            }
-        }
-
-        private void CreateConnection()
-        {
-            try
+            if (options is RabbitMqPublishOptions rabbitMqPublishOptions)
             {
                 var factory = new ConnectionFactory
                 {
-                    HostName = _messageBusOptions.HostName,
-                    UserName = _messageBusOptions.UserName,
-                    Password = _messageBusOptions.Password
+                    HostName = rabbitMqPublishOptions.HostName,
+                    UserName = rabbitMqPublishOptions.UserName,
+                    Password = rabbitMqPublishOptions.Password
                 };
 
-                _connection = factory.CreateConnection();
+                var messageJson = JsonSerializer.Serialize(message, JsonOptionsConfiguration.Options);
+                var messageBody = Encoding.UTF8.GetBytes(messageJson);
 
+                using var connection = factory.CreateConnection();
+                using var channel = connection.CreateModel();
+
+                channel.BasicPublish(exchange: rabbitMqPublishOptions.ExchangeName, routingKey: rabbitMqPublishOptions.RoutingKey, basicProperties: null, body: messageBody);
+
+                // // Topic -> exchange and routing key (with pattern '*' -> one '#' -> zero or more words )
+                // channel.BasicPublish(exchange: "topic_exchange_sandbox", routingKey: "routing.key", basicProperties: null, body: messageBody);
+                // 
+                // // Fanout -> exchange
+                // channel.BasicPublish(exchange: "fanout_exchange_sandbox", routingKey: "", basicProperties: null, body: messageBody);
+                // 
+                // // Direct -> exchange and routingKey (without pattern)
+                // channel.BasicPublish(exchange: "direct_exchange_sandbox", routingKey: "direct_queue_rk_1", basicProperties: null, body: messageBody);
             }
-            catch (Exception ex)
+            else
             {
-                // log exception
-            }
-        }
-
-        private bool ConnectionExists()
-        {
-            if (_connection != null)
-            {
-                return true;
+                throw new NotSupportedException($"Type '{options.GetType().FullName}' does not support.");
             }
 
-            CreateConnection();
-            return _connection != null;
+            return Task.CompletedTask;
         }
     }
 }
