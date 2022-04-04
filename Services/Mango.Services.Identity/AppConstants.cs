@@ -30,6 +30,7 @@ namespace Mango.Services.Identity
                     ClientId = "client",
                     ClientSecrets = {new Secret("secret".Sha256())},
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AccessTokenLifetime = 604800, // 7 days
                     AllowedScopes = {"read", "write", "profile" },
                 },
                 new Client
@@ -39,6 +40,7 @@ namespace Mango.Services.Identity
                     AllowedGrantTypes = GrantTypes.Code,
                     RedirectUris = { "https://localhost:7065/signin-oidc" },
                     PostLogoutRedirectUris = { "https://localhost:7065/signout-callback-oidc" },
+                    AccessTokenLifetime = 604800, // 7 days
                     AllowedScopes = new List<string>
                     {
                         IdentityServerConstants.StandardScopes.OpenId,

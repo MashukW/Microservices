@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using Mango.Services.ShoppingCartAPI.Accessors.Interfaces;
-using Mango.Services.ShoppingCartAPI.Database.Entities;
+using Mango.Services.ShoppingCartAPI.Models.Entities;
 using Mango.Services.ShoppingCartAPI.Models.Incoming;
 using Mango.Services.ShoppingCartAPI.Models.Messages;
 using Mango.Services.ShoppingCartAPI.Models.Outgoing;
 using Mango.Services.ShoppingCartAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using Shared.Database.Repositories;
 using Shared.Exceptions;
 using Shared.Message;
 using Shared.Message.Options.RabbitMq;
@@ -22,89 +21,63 @@ namespace Mango.Services.ShoppingCartAPI.Services
         private readonly MessageBusOptions _messageBusOptions;
         private readonly IUserAccessor _userAccessor;
         private readonly IMessagePublisher _messagePublisher;
-        private readonly ICartProductService _cartProductService;
+        private readonly IMemoryCache _cache;
         private readonly ICouponService _couponService;
-        private readonly IRepository<Cart> _cartRepository;
-        private readonly IWorkUnit _workUnit;
         private readonly IMapper _mapper;
 
         public CartService(
             IOptions<MessageBusOptions> messageBusOptions,
             IUserAccessor userAccessor,
             IMessagePublisher messagePublisher,
-            ICartProductService cartProductService,
+            IMemoryCache cache,
             ICouponService couponService,
-            IRepository<Cart> cartRepository,
-            IWorkUnit workUnit,
             IMapper mapper)
         {
             _messageBusOptions = messageBusOptions.Value;
-
             _userAccessor = userAccessor;
-
             _messagePublisher = messagePublisher;
-
-            _cartProductService = cartProductService;
-
+            _cache = cache;
             _couponService = couponService;
-
-            _cartRepository = cartRepository;
-
-            _workUnit = workUnit;
             _mapper = mapper;
         }
 
-        public async Task<CartOutgoing> Get()
+        public CartOutgoing Get()
         {
-            var userCart = await GetUserCart();
+            var userCart = GetUserCart();
             return _mapper.Map<CartOutgoing>(userCart);
         }
 
-        public async Task<CartOutgoing> AddItem(CartItemIncoming cartItemIncoming)
+        public CartOutgoing AddItem(CartItemIncoming cartItemIncoming)
         {
-            var userCart = await GetUserCart();
+            var userCart = GetUserCart();
+            if (userCart.IsInitial())
+                userCart.PublicId = Guid.NewGuid();
 
-            var productId = await _cartProductService.AddProductIfNotExists(cartItemIncoming.Product);
-
-            var cartItem = _mapper.Map<CartItem>(cartItemIncoming);
-            cartItem.ProductId = productId;
-
-            if (!userCart.CartItems.Any())
+            var existingCartItem = userCart.CartItems.FirstOrDefault(x => x.Product.PublicId == cartItemIncoming.Product.PublicId);
+            if (existingCartItem is null)
             {
-                userCart.CartItems.Add(cartItem);
-
-                if (userCart.IsInitial())
-                {
-                    await _cartRepository.Add(userCart);
-                }
-                else
-                {
-                    await _cartRepository.Update(userCart);
-                }
+                var newCartItem = _mapper.Map<CartItem>(cartItemIncoming);
+                userCart.CartItems.Add(newCartItem);
             }
             else
             {
-                var existingCartItem = userCart.CartItems.FirstOrDefault(x => x.ProductId == productId);
-                if (existingCartItem != null)
-                {
-                    existingCartItem.Count += cartItemIncoming.Count;
-                }
-                else
-                {
-                    userCart.CartItems.Add(cartItem);
-                }
-
-                await _cartRepository.Update(userCart);
+                existingCartItem.Count += cartItemIncoming.Count;
             }
 
-            await _workUnit.SaveChanges();
+            var userCartKey = string.Format(AppConstants.Cache.UserCartCacheKey, userCart.UserPublicId);
+            var cacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(AppConstants.Cache.UserCartAbsoluteExpirationMin),
+            };
+
+            _cache.Set(userCartKey, userCart, cacheEntryOptions);
 
             return _mapper.Map<CartOutgoing>(userCart);
         }
 
-        public async Task<bool> RemoveItem(Guid cartItemPublicId)
+        public bool RemoveItem(Guid cartItemPublicId)
         {
-            var userCart = await GetUserCart();
+            var userCart = GetUserCart();
             if (userCart.IsInitial())
                 throw new NotFoundException("User cart not found");
 
@@ -113,42 +86,59 @@ namespace Mango.Services.ShoppingCartAPI.Services
                 return false;
 
             userCart.CartItems.Remove(cartItem);
-            await _cartRepository.Update(userCart);
 
-            await _workUnit.SaveChanges();
+            var userCartKey = string.Format(AppConstants.Cache.UserCartCacheKey, userCart.UserPublicId);
+            var cacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(AppConstants.Cache.UserCartAbsoluteExpirationMin),
+            };
+
+            _cache.Set(userCartKey, userCart, cacheEntryOptions);
 
             return true;
         }
 
-        public async Task<bool> ApplyCoupon(string couponCode)
+        public bool ApplyCoupon(string couponCode)
         {
-            var userCart = await GetUserCart();
+            var userCart = GetUserCart();
             if (userCart.IsInitial())
                 throw new NotFoundException("User cart not found");
 
             userCart.CouponCode = couponCode;
-            await _cartRepository.Update(userCart);
-            await _workUnit.SaveChanges();
+
+            var userCartKey = string.Format(AppConstants.Cache.UserCartCacheKey, userCart.UserPublicId);
+            var cacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(AppConstants.Cache.UserCartAbsoluteExpirationMin),
+            };
+
+            _cache.Set(userCartKey, userCart, cacheEntryOptions);
 
             return true;
         }
 
-        public async Task<bool> RemoveCoupon()
+        public bool RemoveCoupon()
         {
-            var userCart = await GetUserCart();
+            var userCart = GetUserCart();
             if (userCart.IsInitial())
                 throw new NotFoundException("User cart not found");
 
             userCart.CouponCode = "";
-            await _cartRepository.Update(userCart);
-            await _workUnit.SaveChanges();
+
+            var userCartKey = string.Format(AppConstants.Cache.UserCartCacheKey, userCart.UserPublicId);
+            var cacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(AppConstants.Cache.UserCartAbsoluteExpirationMin),
+            };
+
+            _cache.Set(userCartKey, userCart, cacheEntryOptions);
 
             return true;
         }
 
         public async Task<bool> Checkout(CheckoutIncoming incomingCheckout)
         {
-            var userCart = await GetUserCart();
+            var userCart = GetUserCart();
             if (userCart.IsInitial())
                 throw new NotFoundException("User cart not found");
 
@@ -191,39 +181,41 @@ namespace Mango.Services.ShoppingCartAPI.Services
                 RoutingKey = MessageConstants.RabbitMq.RoutingKeys.CheckoutOrder
             });
 
-            await Clear();
+            Clear();
 
             return true;
         }
 
-        public async Task<bool> Clear()
+        public bool Clear()
         {
-            var userCart = await GetUserCart();
+            var userCart = GetUserCart();
             if (userCart.IsInitial())
-                throw new NotFoundException("User cart not found");
+                return false;
 
-            userCart.CartItems?.Clear();
-            userCart.CouponCode = string.Empty;
-
-            await _cartRepository.Update(userCart);
-
-            await _workUnit.SaveChanges();
+            var userCartKey = string.Format(AppConstants.Cache.UserCartCacheKey, userCart.UserPublicId);
+            _cache.Remove(userCartKey);
 
             return true;
         }
 
-        private async Task<Cart> GetUserCart()
+        private Cart GetUserCart()
         {
             var appUser = _userAccessor.GetAppUser();
             if (!appUser.IsValid())
                 throw new UnauthorizedException();
 
-            var userCart = await _cartRepository
-                .Query()
-                .Include(x => x.CartItems).ThenInclude(x => x.Product)
-                .FirstOrDefaultAsync(x => x.UserPublicId == appUser.Id);
+            var userCartKey = string.Format(AppConstants.Cache.UserCartCacheKey, appUser.Id);
+            if (_cache.TryGetValue(userCartKey, out Cart userCart))
+            {
+                return userCart;
+            }
 
-            return userCart ?? new Cart { UserPublicId = appUser.Id };
+            return new Cart
+            {
+                UserPublicId = appUser.Id,
+                DateCreated = DateTime.UtcNow,
+                DateUpdated = DateTime.UtcNow
+            };
         }
     }
 }

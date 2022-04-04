@@ -20,37 +20,37 @@ public class CartApiController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ApiResponse<CartOutgoing>> Get()
+    public ApiResponse<CartOutgoing> Get()
     {
-        var cart = await _cartService.Get();
+        var cart = _cartService.Get();
         return cart;
     }
 
     [HttpPost("add-item")]
-    public async Task<ApiResponse<CartOutgoing>> AddItems([FromBody] CartItemIncoming cartItemIncoming)
+    public ApiResponse<CartOutgoing> AddItems([FromBody] CartItemIncoming cartItemIncoming)
     {
-        var userCart = await _cartService.AddItem(cartItemIncoming);
+        var userCart = _cartService.AddItem(cartItemIncoming);
         return userCart;
     }
 
     [HttpDelete("remove-item")]
-    public async Task<ApiResponse<bool>> RemoveItems([FromBody] Guid cartItemPublicId)
+    public ApiResponse<bool> RemoveItems([FromBody] Guid cartItemPublicId)
     {
-        var isSuccess = await _cartService.RemoveItem(cartItemPublicId);
+        var isSuccess = _cartService.RemoveItem(cartItemPublicId);
         return isSuccess;
     }
 
     [HttpPost("apply-coupon")]
-    public async Task<ApiResponse<bool>> ApplyCoupon([FromBody] string couponCode)
+    public ApiResponse<bool> ApplyCoupon([FromBody] string couponCode)
     {
-        var isSuccess = await _cartService.ApplyCoupon(couponCode);
+        var isSuccess = _cartService.ApplyCoupon(couponCode);
         return isSuccess;
     }
 
     [HttpDelete("remove-coupon")]
-    public async Task<ApiResponse<bool>> RemoveCoupon()
+    public ApiResponse<bool> RemoveCoupon()
     {
-        var isSuccess = await _cartService.RemoveCoupon();
+        var isSuccess = _cartService.RemoveCoupon();
         return isSuccess;
     }
 
@@ -62,9 +62,9 @@ public class CartApiController : ControllerBase
     }
 
     [HttpDelete("clear")]
-    public async Task<ApiResponse<bool>> Clear()
+    public ApiResponse<bool> Clear()
     {
-        var isSuccess = await _cartService.Clear();
+        var isSuccess = _cartService.Clear();
         return isSuccess;
     }
 }

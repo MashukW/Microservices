@@ -5,18 +5,18 @@ namespace Mango.Services.ShoppingCartAPI.Services
 {
     public interface ICartService
     {
-        Task<CartOutgoing> Get();
+        CartOutgoing Get();
 
-        Task<CartOutgoing> AddItem(CartItemIncoming cartItemIncoming);
+        CartOutgoing AddItem(CartItemIncoming cartItemIncoming);
 
-        Task<bool> RemoveItem(Guid cartItemPublicId);
+        bool RemoveItem(Guid cartItemPublicId);
 
-        Task<bool> ApplyCoupon(string couponCode);
+        bool ApplyCoupon(string couponCode);
 
-        Task<bool> RemoveCoupon();
+        bool RemoveCoupon();
 
         Task<bool> Checkout(CheckoutIncoming incomingCheckout);
 
-        Task<bool> Clear();
+        bool Clear();
     }
 }

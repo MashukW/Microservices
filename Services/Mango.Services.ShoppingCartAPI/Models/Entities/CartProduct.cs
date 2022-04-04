@@ -1,10 +1,11 @@
-﻿using Shared.Database.Entities;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Mango.Services.ShoppingCartAPI.Database.Entities
+namespace Mango.Services.ShoppingCartAPI.Models.Entities
 {
-    public class CartProduct : PublicEntity
+    public class CartProduct
     {
+        public Guid PublicId { get; set; }
+
         public string? Name { get; set; }
 
         [Range(1, 1000)]
@@ -15,7 +16,5 @@ namespace Mango.Services.ShoppingCartAPI.Database.Entities
         public string? CategoryName { get; set; }
 
         public string? ImageUrl { get; set; }
-
-        public virtual List<CartItem>? CartItems { get; set; }
     }
 }

@@ -2,17 +2,12 @@ using AutoMapper;
 using Mango.Services.ShoppingCartAPI;
 using Mango.Services.ShoppingCartAPI.Accessors;
 using Mango.Services.ShoppingCartAPI.Accessors.Interfaces;
-using Mango.Services.ShoppingCartAPI.Database;
-using Mango.Services.ShoppingCartAPI.Database.Entities;
 using Mango.Services.ShoppingCartAPI.Services;
 using Mango.Services.ShoppingCartAPI.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Shared.Api.Middlewares;
 using Shared.Configurations;
-using Shared.Database;
-using Shared.Database.Repositories;
 using Shared.Message.Services.Interfaces;
 using Shared.Message.Services.RabbitMq;
 using Shared.Options;
@@ -23,9 +18,6 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddHttpClient();
@@ -37,24 +29,18 @@ AppConstants.CouponApi = builder.Configuration["ServiceUrls:CouponApi"];
 
 builder.Services.Configure<MessageBusOptions>(builder.Configuration.GetSection(nameof(MessageBusOptions)));
 
-builder.Services.AddScoped<ICartProductService, CartProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 
 // builder.Services.AddScoped<IMessagePublisher, AzureMessagePublisher>();
 builder.Services.AddScoped<IMessagePublisher, RabbitMqMessagePublisher>();
 
-builder.Services.AddScoped<BaseDbContext, ApplicationDbContext>();
-
-builder.Services.AddScoped<IRepository<Cart>, Repository<Cart>>();
-builder.Services.AddScoped<IRepository<CartProduct>, Repository<CartProduct>>();
-
-builder.Services.AddScoped<IWorkUnit, WorkUnit>();
-
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<ITokenAccessor, TokenAccessor>();
 
 builder.Services.AddScoped<IApiService, ApiService>();
+
+builder.Services.AddMemoryCache();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
